@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/service-finder-pro\" 2>/dev/null | head -30)",
+      "Bash(ls \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/Bantu_Back\" | head -40)",
+      "Bash(flutter analyze *)",
+      "Bash(cd \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/bantu-market-connect/src/pages\" && wc -l *.tsx && echo \"---BuyerDashboard sections---\" && grep -n \"TabsTrigger\\\\|activeSection\\\\|section\\\\b\\\\|title=\" BuyerDashboard.tsx | head -30)",
+      "Read(//c/Users/hp/Documents/SBL PROD/TNK Synergies/projet/bantuhire-admin-hub/**)",
+      "Bash(node -e \"const s=require\\('fs'\\).readFileSync\\('src/pages/AdminCatalogue.tsx','utf8'\\); const m=s.split\\('\\\\n'\\)[39]; console.log\\(JSON.stringify\\(m\\)\\); const slugify=\\(v\\)=>v.toLowerCase\\(\\).normalize\\('NFD'\\).replace\\(/[̀-ͯ]/g,''\\).replace\\(/[^a-z0-9]+/g,'-'\\).replace\\(/\\(^-|-\\\\$\\)/g,''\\); console.log\\(slugify\\('Électroménager & Cuisine'\\)\\)\")",
+      "Bash(cat \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Produit\\\\ProduitResource.php\")",
+      "Bash(cat \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Vendeur\\\\VendeurResource.php\" \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Produit\\\\CategorieProduitResource.php\" 2>/dev/null | head -60)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

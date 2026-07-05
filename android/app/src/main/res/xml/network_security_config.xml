@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Reverb tourne en http/ws (REVERB_SCHEME=http) sur le port 8002.
+         On autorise le trafic en clair UNIQUEMENT vers ce domaine. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">app.bantulink.tech</domain>
+    </domain-config>
+</network-security-config>
