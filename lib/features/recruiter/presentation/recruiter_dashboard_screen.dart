@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/subscriptions/subscriptions_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../jobs/data/models/candidature.dart';
@@ -16,6 +17,7 @@ class RecruiterDashboardScreen extends ConsumerWidget {
     final asyncOffers = ref.watch(myOffersProvider);
     final asyncApps = ref.watch(applicationsProvider);
     final user = ref.watch(authControllerProvider).valueOrNull;
+    final access = ref.watch(recruiterAccessProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -74,6 +76,56 @@ class RecruiterDashboardScreen extends ConsumerWidget {
                 ],
               ),
             ),
+
+            // Statut du plan (PLAN TARIFAIRE : gratuit 2 mois puis Pro)
+            if (!access.hasPro)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: InkWell(
+                  onTap: () => context.push('/recruteur/abonnement'),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: access.inTrial
+                          ? AppColors.royalBlue.withOpacity(0.07)
+                          : AppColors.error.withOpacity(0.07),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: access.inTrial
+                              ? AppColors.royalBlue.withOpacity(0.3)
+                              : AppColors.error.withOpacity(0.35)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                            access.inTrial
+                                ? Icons.timer_outlined
+                                : Icons.lock_clock,
+                            size: 18,
+                            color: access.inTrial
+                                ? AppColors.royalBlue
+                                : AppColors.error),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            access.inTrial
+                                ? (access.trialDaysLeft != null
+                                    ? context.tr('rsub.trial_left').replaceAll(
+                                        '{days}', '${access.trialDaysLeft}')
+                                    : context.tr('rsub.free_desc'))
+                                : context.tr('rsub.trial_over'),
+                            style: const TextStyle(
+                                fontSize: 12.5, fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                        const Icon(Icons.chevron_right,
+                            size: 18, color: AppColors.textMuted),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
             const SizedBox(height: 16),
 

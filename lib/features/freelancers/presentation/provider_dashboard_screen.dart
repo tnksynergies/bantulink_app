@@ -159,6 +159,12 @@ class _ProfileTab extends StatelessWidget {
                     label: context.tr('provider.stats_rating'),
                     value: freelancer.computedRating.toStringAsFixed(1),
                     color: Colors.amber)),
+            const SizedBox(width: 8),
+            Expanded(
+                child: _StatCard(
+                    label: context.tr('views.profile_views'),
+                    value: '${freelancer.profileViews}',
+                    color: AppColors.royalBlue)),
           ],
         ),
         const SizedBox(height: 16),

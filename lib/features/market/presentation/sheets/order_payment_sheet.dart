@@ -242,7 +242,21 @@ class _OrderPaymentSheetState extends ConsumerState<OrderPaymentSheet> {
         Text(context.tr('market.payment_initiated'),
             textAlign: TextAlign.center,
             style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 32),
+        const SizedBox(height: 14),
+        // Orange Money n'envoie pas toujours le push USSD : indiquer la
+        // procedure manuelle de validation.
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: MarketColors.accent.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: MarketColors.accent.withOpacity(0.3)),
+          ),
+          child: Text(context.tr('pay.ussd_hint'),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, height: 1.35)),
+        ),
+        const SizedBox(height: 24),
       ],
     );
   }

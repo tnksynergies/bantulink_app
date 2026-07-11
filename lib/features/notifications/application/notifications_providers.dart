@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/i18n/app_strings.dart';
+import '../../../core/i18n/locale_provider.dart';
 import '../../../core/network/network_providers.dart';
 import '../data/models/app_notification.dart';
 import '../data/notifications_remote_data_source.dart';
+import '../services/local_notifications_service.dart';
 
 final notificationsDataSourceProvider = Provider<NotificationsRemoteDataSource>(
     (ref) => NotificationsRemoteDataSource(ref.watch(dioProvider)));
@@ -13,6 +16,11 @@ class NotificationsNotifier
     extends AutoDisposeAsyncNotifier<List<AppNotification>> {
   Timer? _timer;
 
+  /// Ids deja annonces dans la barre systeme. Statique : survit a la
+  /// re-creation du notifier (autoDispose) pour ne jamais notifier deux fois.
+  static final Set<String> _announcedIds = <String>{};
+  static bool _bootstrapped = false;
+
   @override
   Future<List<AppNotification>> build() async {
     _timer?.cancel();
@@ -22,14 +30,49 @@ class NotificationsNotifier
       refresh();
     });
     ref.onDispose(() => _timer?.cancel());
-    return ref.read(notificationsDataSourceProvider).list();
+    final list = await ref.read(notificationsDataSourceProvider).list();
+    _announceNew(list);
+    return list;
   }
 
   /// Recharge la liste sans passer par un etat loading (garde l'ancienne
   /// liste visible pendant le fetch).
   Future<void> refresh() async {
     final list = await ref.read(notificationsDataSourceProvider).list();
+    _announceNew(list);
     state = AsyncValue.data(list);
+  }
+
+  /// Pousse dans la barre systeme les notifications non lues jamais vues
+  /// (point 1 seance de travail). Au premier chargement on marque tout comme
+  /// deja vu sans notifier, pour ne pas rejouer l'historique au demarrage.
+  void _announceNew(List<AppNotification> list) {
+    final unread = list.where((n) => n.isUnread && n.id.isNotEmpty);
+    if (!_bootstrapped) {
+      _announcedIds.addAll(unread.map((n) => n.id));
+      _bootstrapped = true;
+      return;
+    }
+    final lang = ref.read(localeProvider).languageCode;
+    String tr(String key) =>
+        kStrings[lang]?[key] ?? kStrings['fr']?[key] ?? key;
+
+    var shown = 0;
+    for (final n in unread) {
+      if (_announcedIds.contains(n.id)) continue;
+      _announcedIds.add(n.id);
+      if (shown >= 3) continue; // anti-spam : max 3 par cycle de polling
+      shown++;
+      final title = (n.title != null && n.title!.trim().isNotEmpty)
+          ? n.title!
+          : tr(n.kind.i18nTitleKey);
+      final body = (n.body != null && n.body!.trim().isNotEmpty)
+          ? n.body!
+          : tr('notif.tap_to_open');
+      // Fire-and-forget : l'affichage systeme ne doit pas bloquer le fetch.
+      LocalNotificationsService.instance
+          .show(serverId: n.id, title: title, body: body);
+    }
   }
 }
 

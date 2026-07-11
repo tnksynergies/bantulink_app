@@ -22,6 +22,7 @@ class Freelancer {
     this.missionsCount,
     this.isVerified = false,
     this.certificationStatus,
+    this.profileViews = 0,
     this.acceptPlatformPayment = true,
     this.walletBalance,
     this.createdAt,
@@ -48,6 +49,7 @@ class Freelancer {
   final int? missionsCount;
   final bool isVerified;
   final String? certificationStatus; // pending | approved | rejected
+  final int profileViews;
   final bool acceptPlatformPayment;
   final num? walletBalance;
   final String? createdAt;
@@ -132,6 +134,7 @@ class Freelancer {
       missionsCount: _iOrNull(j['missions_count']),
       isVerified: j['is_verified'] == true || j['is_verified'] == 1,
       certificationStatus: _s(j['certification_status']),
+      profileViews: _iOrNull(j['profile_views']) ?? 0,
       acceptPlatformPayment: j['accept_platform_payment'] != false,
       walletBalance: _num(j['wallet_balance']) ?? _num(j['solde']) ?? _num(j['balance']),
       createdAt: _s(j['created_at']),

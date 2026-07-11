@@ -4,6 +4,7 @@ import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../application/market_providers.dart';
 import '../data/models/order.dart';
+import '../services/invoice_pdf.dart';
 import 'market_colors.dart';
 
 /// Espace acheteur aligne sur le BuyerDashboard web :
@@ -445,10 +446,51 @@ class _OrderDetailSheet extends StatelessWidget {
               style: const TextStyle(fontSize: 13),
             ),
           ],
+          const SizedBox(height: 16),
+
+          // Impression / telechargement de la facture (point 7)
+          OutlinedButton.icon(
+            onPressed: () => _printInvoice(context),
+            icon: const Icon(Icons.print_outlined,
+                size: 18, color: MarketColors.primary),
+            label: Text(context.tr('invoice.download'),
+                style: const TextStyle(color: MarketColors.primary)),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: MarketColors.primary),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
           const SizedBox(height: 20),
         ],
       ),
     );
+  }
+
+  Future<void> _printInvoice(BuildContext context) async {
+    // Capture des labels et du messenger AVANT l'async gap.
+    final labels = <String, String>{
+      for (final k in const [
+        'invoice.title',
+        'invoice.order',
+        'invoice.date',
+        'invoice.item',
+        'invoice.qty',
+        'invoice.unit_price',
+        'invoice.total',
+        'invoice.subtotal',
+        'invoice.delivery',
+        'invoice.grand_total',
+        'invoice.fees_note',
+        'invoice.generated_by',
+      ])
+        k: context.tr(k),
+    };
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await InvoicePdf.printOrder(order, (k) => labels[k] ?? k);
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
   }
 
   Widget _row(String label, String value, {bool bold = false}) {

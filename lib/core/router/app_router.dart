@@ -13,6 +13,7 @@ import '../../features/home/presentation/home_screen.dart';
 import '../../features/jobs/presentation/jobs_screen.dart';
 import '../../features/jobs/presentation/offer_detail_screen.dart';
 import '../../features/jobs/presentation/candidature_detail_screen.dart';
+import '../../features/jobs/presentation/candidate_matching_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/profile/presentation/edit_particulier_screen.dart';
 import '../../features/boutique/presentation/boutique_screen.dart';
@@ -28,6 +29,8 @@ import '../../features/recruiter/presentation/recruiter_dashboard_screen.dart';
 import '../../features/recruiter/presentation/my_job_posts_screen.dart';
 import '../../features/recruiter/presentation/applications_screen.dart';
 import '../../features/recruiter/presentation/application_detail_screen.dart';
+import '../../features/recruiter/presentation/matching_preview_screen.dart';
+import '../../features/recruiter/presentation/recruiter_subscription_screen.dart';
 import '../../features/recruiter/presentation/widgets/recruiter_guard.dart';
 import '../../features/recruiter/application/recruiter_providers.dart';
 import '../../features/jobs/data/models/offer.dart';
@@ -51,6 +54,7 @@ import '../../features/market/presentation/become_seller_screen.dart';
 import '../../features/market/presentation/seller_dashboard_screen.dart';
 import '../../features/market/presentation/product_form_screen.dart';
 import '../../features/market/presentation/widgets/vendor_guard.dart';
+import '../../features/market/presentation/vendor_pricing_screen.dart';
 import '../../features/market/application/vendor_providers.dart';
 import '../../features/market/data/models/product.dart';
 
@@ -193,8 +197,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/recruteur/abonnement',
         parentNavigatorKey: _rootKey,
-        builder: (_, __) => const RecruiterGuard(
-            child: ComingSoonScreen(label: 'Abonnements')),
+        builder: (_, __) =>
+            const RecruiterGuard(child: RecruiterSubscriptionScreen()),
       ),
       GoRoute(
         path: '/recruteur/analytics',
@@ -207,6 +211,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         builder: (_, __) => const RecruiterGuard(
             child: ComingSoonScreen(label: 'Parametres')),
+      ),
+      GoRoute(
+        path: '/recruteur/offres/:id/matching',
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) => RecruiterGuard(
+          child: MatchingPreviewScreen(
+            offreId: int.parse(state.pathParameters['id']!),
+            offreTitre: state.uri.queryParameters['titre'],
+          ),
+        ),
       ),
       GoRoute(
         path: '/offre/nouvelle',
@@ -286,6 +300,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const SubscriptionScreen(),
       ),
       GoRoute(
+        path: '/candidat/abonnement',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const CandidateSubscriptionScreen(),
+      ),
+      GoRoute(
+        path: '/candidat/matching',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const CandidateMatchingScreen(),
+      ),
+      GoRoute(
         path: '/prestataire/verification',
         parentNavigatorKey: _rootKey,
         builder: (_, __) => const KycScreen(),
@@ -356,6 +380,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/vendeur/dashboard',
         parentNavigatorKey: _rootKey,
         builder: (_, __) => const VendorGuard(child: SellerDashboardScreen()),
+      ),
+      GoRoute(
+        path: '/vendeur/tarifs',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const VendorPricingScreen(),
       ),
       GoRoute(
         path: '/vendeur/produit/nouveau',

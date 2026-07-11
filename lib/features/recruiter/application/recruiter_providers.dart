@@ -91,6 +91,12 @@ final applicationDetailProvider =
   return ref.watch(recruiterDataSourceProvider).getApplication(id);
 });
 
+/// Apercu du matching IA pour une offre (point 3 de la seance de travail).
+final jobMatchesProvider =
+    FutureProvider.autoDispose.family<List<JobMatch>, int>((ref, offreId) async {
+  return ref.watch(recruiterDataSourceProvider).jobMatches(offreId);
+});
+
 /// Supprime une offre.
 class DeleteOfferController extends AutoDisposeAsyncNotifier<bool> {
   @override

@@ -24,6 +24,11 @@ class SellerDashboardScreen extends ConsumerWidget {
           title: Text(context.tr('market.seller_dashboard')),
           actions: [
             IconButton(
+              tooltip: context.tr('fees.vendor_pricing_title'),
+              icon: const Icon(Icons.percent),
+              onPressed: () => context.push('/vendeur/tarifs'),
+            ),
+            IconButton(
               tooltip: context.tr('market.title'),
               icon: const Icon(Icons.storefront_outlined),
               onPressed: () => context.go('/boutique'),
@@ -536,6 +541,29 @@ class _WalletTab extends ConsumerWidget {
         data: (wallet) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // Rappel de la commission plateforme (point 5, strategie 5,5 %)
+            Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: MarketColors.accent.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(10),
+                border:
+                    Border.all(color: MarketColors.accent.withOpacity(0.35)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.info_outline,
+                      color: MarketColors.accent, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(context.tr('fees.vendor_banner'),
+                        style: const TextStyle(fontSize: 12, height: 1.4)),
+                  ),
+                ],
+              ),
+            ),
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

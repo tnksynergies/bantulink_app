@@ -200,6 +200,27 @@ class _ProfileBody extends ConsumerWidget {
               ),
             ),
           ],
+          if (freelancer.profileViews > 0) ...[
+            const SizedBox(height: 6),
+            // Compteur de vues du profil (point 6)
+            Text.rich(
+              TextSpan(
+                children: [
+                  const WidgetSpan(
+                    alignment: PlaceholderAlignment.middle,
+                    child: Icon(Icons.visibility_outlined,
+                        size: 14, color: AppColors.textMuted),
+                  ),
+                  TextSpan(
+                    text:
+                        '  ${freelancer.profileViews} ${context.tr('views.profile_views').toLowerCase()}',
+                    style: const TextStyle(
+                        fontSize: 13, color: AppColors.textMuted),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

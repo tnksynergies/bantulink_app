@@ -10,7 +10,11 @@
       "Bash(cat \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Produit\\\\ProduitResource.php\")",
       "Bash(cat \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Vendeur\\\\VendeurResource.php\" \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\\\\app\\\\Http\\\\Resources\\\\Produit\\\\CategorieProduitResource.php\" 2>/dev/null | head -60)",
       "Bash(npx tsc *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(extract-text \"C:/Users/hp/Downloads/PLAN TARIFAIRE BANTUHIRE UPDATE \\(3\\).docx\")",
+      "Bash(pandoc \"C:/Users/hp/Downloads/PLAN TARIFAIRE BANTUHIRE UPDATE \\(3\\).docx\" -t markdown -o -)",
+      "Bash(python \"C:/Users/hp/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/54defdac-cbd2-4ad8-b67b-6ee5025e44e0/b3559fb5-cc3a-4c9e-b632-2545ee3093b4/skills/docx/scripts/office/unpack.py\" \"C:/Users/hp/Downloads/PLAN TARIFAIRE BANTUHIRE UPDATE \\(3\\).docx\" plan_tarifaire_unpacked/)",
+      "Bash(pip install *)"
     ]
   }
 }

@@ -11,6 +11,26 @@ class UploadBytes {
   final String name;
 }
 
+/// Resultat du matching IA candidat/offre (endpoint matching/job/{id}).
+class JobMatch {
+  const JobMatch({required this.candidateId, required this.name, required this.score});
+  final int candidateId;
+  final String name;
+  final double score; // 0..100
+
+  factory JobMatch.fromJson(Map<String, dynamic> j) {
+    return JobMatch(
+      candidateId: j['candidate_id'] is int
+          ? j['candidate_id'] as int
+          : int.tryParse('${j['candidate_id']}') ?? 0,
+      name: (j['name'] ?? '').toString(),
+      score: j['score'] is num
+          ? (j['score'] as num).toDouble()
+          : double.tryParse('${j['score']}') ?? 0,
+    );
+  }
+}
+
 class RecruiterRemoteDataSource {
   RecruiterRemoteDataSource(this._dio);
   final Dio _dio;
@@ -176,6 +196,20 @@ class RecruiterRemoteDataSource {
         if (lieu != null) 'lieu': lieu,
         if (lienVisio != null) 'lien_visio': lienVisio,
       });
+    } on DioException catch (e) {
+      throw ApiException.fromDio(e);
+    }
+  }
+
+  /// Apercu du matching IA pour une offre (GET matching/job/{offreId}).
+  /// Reponse : liste triee par score decroissant.
+  Future<List<JobMatch>> jobMatches(int offreId) async {
+    try {
+      final res = await _dio.get('/matching/job/$offreId');
+      return unwrapList(res.data)
+          .whereType<Map>()
+          .map((m) => JobMatch.fromJson(Map<String, dynamic>.from(m)))
+          .toList();
     } on DioException catch (e) {
       throw ApiException.fromDio(e);
     }

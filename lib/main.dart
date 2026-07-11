@@ -7,10 +7,13 @@ import 'core/i18n/app_localizations.dart';
 import 'core/i18n/locale_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/notifications/services/local_notifications_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  // Notifications systeme (no-op sur web). Le tap ouvre l'ecran notifications.
+  await LocalNotificationsService.instance.init();
   runApp(
     ProviderScope(
       overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
@@ -25,6 +28,9 @@ class BantuLinkApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
+    // Tap sur une notification systeme -> ecran notifications in-app.
+    LocalNotificationsService.instance.onTap =
+        (_) => router.push('/notifications');
     return MaterialApp.router(
       title: 'BantuLink',
       debugShowCheckedModeBanner: false,

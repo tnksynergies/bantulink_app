@@ -132,6 +132,20 @@ class ProfileScreen extends ConsumerWidget {
               subtitle: context.tr('profile.track_evolution'),
               onTap: () => context.go('/emploi'),
             ),
+          if (user?.hasCandidatProfile == true)
+            _Tile(
+              icon: Icons.auto_awesome_outlined,
+              title: context.tr('cmatch.title'),
+              subtitle: context.tr('cmatch.tile_sub'),
+              onTap: () => context.push('/candidat/matching'),
+            ),
+          if (user?.hasCandidatProfile == true)
+            _Tile(
+              icon: Icons.workspace_premium_outlined,
+              title: context.tr('csub.profile_tile'),
+              subtitle: context.tr('csub.profile_tile_sub'),
+              onTap: () => context.push('/candidat/abonnement'),
+            ),
           // Trouver un prestataire : ouvert a tous.
           _Tile(
             icon: Icons.handshake_outlined,

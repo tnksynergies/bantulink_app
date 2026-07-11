@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/subscriptions/subscriptions_providers.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../jobs/data/models/offer.dart';
 import '../application/recruiter_providers.dart';
@@ -13,14 +14,30 @@ class MyJobPostsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(myOffersProvider);
+    // Plan Gratuit = 1 offre publiee. "Publier plusieurs offres" est un
+    // module du plan Pro Recruteur (ou de l'essai 2 mois).
+    final access = ref.watch(recruiterAccessProvider);
+    final offersCount = async.valueOrNull?.length ?? 0;
+    final needsPro = !access.canUseProFeatures && offersCount >= 1;
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr('recruiter.my_offers')),
       ),
       drawer: const RecruiterDrawer(activeRoute: '/recruteur/offres'),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/offre/nouvelle'),
-        icon: const Icon(Icons.add),
+        onPressed: () {
+          if (needsPro) {
+            final messenger = ScaffoldMessenger.of(context);
+            messenger.showSnackBar(SnackBar(
+              content: Text(
+                  '${context.tr('gate.recruiter_locked')} ${context.tr('rsub.pro_b1')}.'),
+            ));
+            context.push('/recruteur/abonnement');
+            return;
+          }
+          context.push('/offre/nouvelle');
+        },
+        icon: Icon(needsPro ? Icons.lock_outline : Icons.add),
         label: Text(context.tr('recruiter.new_offer')),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -171,6 +188,14 @@ class _OfferCard extends ConsumerWidget {
                   onPressed: () => context.push('/offre/${offer.id}/editer'),
                   icon: const Icon(Icons.edit_outlined, size: 16),
                   label: Text(context.tr('recruiter.edit_offer')),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => context.push(
+                      '/recruteur/offres/${offer.id}/matching?titre=${Uri.encodeComponent(offer.titreSafe)}'),
+                  icon: const Icon(Icons.auto_awesome,
+                      size: 16, color: AppColors.royalBlue),
+                  label: Text(context.tr('matching.view_matching'),
+                      style: const TextStyle(color: AppColors.royalBlue)),
                 ),
                 TextButton.icon(
                   onPressed: () => _confirmDelete(context, ref, offer),
