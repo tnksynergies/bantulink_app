@@ -24,7 +24,7 @@ Map<String, String> invoiceLabels(BuildContext context) => {
         'invoice.delivery',
         'invoice.grand_total',
         'invoice.fees_note',
-        'invoice.generated_by',
+        'invoice.client',
         'invoice.mission',
         'invoice.subscription',
         'invoice.freelance_note',
@@ -67,7 +67,7 @@ class InvoiceBrand {
     return InvoiceBrand(
       platformLabel: 'BantuLink',
       accentColor: _orange,
-      platformLogo: await _asset('assets/logos/logobantulink.png'),
+      platformLogo: await asset('assets/logos/logobantulink.png'),
     );
   }
 
@@ -77,7 +77,7 @@ class InvoiceBrand {
     return InvoiceBrand(
       platformLabel: 'BantuHire',
       accentColor: _blue,
-      platformLogo: await _asset('assets/logos/logobantuhire.png'),
+      platformLogo: await asset('assets/logos/logobantuhire.png'),
       partnerLogo: await _network(companyLogoUrl),
       partnerName: companyName,
     );
@@ -89,7 +89,7 @@ class InvoiceBrand {
     return InvoiceBrand(
       platformLabel: 'BantuMarket',
       accentColor: _green,
-      platformLogo: await _asset('assets/logos/logobantumarket.png'),
+      platformLogo: await asset('assets/logos/logobantumarket.png'),
       partnerLogo: await _network(shopLogoUrl),
       partnerName: shopName,
     );
@@ -100,11 +100,11 @@ class InvoiceBrand {
     return InvoiceBrand(
       platformLabel: 'BantuMarket',
       accentColor: _green,
-      platformLogo: await _asset('assets/logos/logobantumarket.png'),
+      platformLogo: await asset('assets/logos/logobantumarket.png'),
     );
   }
 
-  static Future<pw.MemoryImage?> _asset(String path) async {
+  static Future<pw.MemoryImage?> asset(String path) async {
     try {
       final data = await rootBundle.load(path);
       return pw.MemoryImage(data.buffer.asUint8List());
@@ -155,34 +155,48 @@ class InvoicePdf {
   static const _border = PdfColor.fromInt(0xFFE5E7EB);
   static const _blue = PdfColor.fromInt(0xFF1C2F6B);
 
+  // Pied de page societe (papier en-tete TNK Synergies).
+  static const _poweredBy = 'Powered by TNK Synergies LTD.';
+  static const _tnkContact =
+      'Logpom - Douala  ·  Tél : +237 686 135 038 / 683 179 451  ·  info@tnksynergies.com  ·  www.tnksynergies.com';
+  static const _tnkLegal =
+      'N° Contribuable : M052517755216S  ·  Registre : CM-DLA-01-2025-B12-00705  ·  Régime fiscal : IGS';
+
   static String _money(num? v) => '${(v ?? 0).toStringAsFixed(0)} XAF';
 
   /// Facture d'une commande BantuMarket.
   /// [brand] : InvoiceBrand.market() cote acheteur, InvoiceBrand.vendor()
-  /// cote vendeur (logo boutique).
+  /// cote vendeur (logo boutique). [clientLines] : identite du client
+  /// (nom, email, telephone...) affichee dans le bloc "Client".
   static Future<void> printOrder(
     Order order,
     String Function(String key) tr, {
     InvoiceBrand? brand,
-    String? customerName,
+    List<String> clientLines = const [],
   }) async {
     final b = brand ?? await InvoiceBrand.market();
 
-    final deliveryParts = <String>[
-      if (customerName != null && customerName.isNotEmpty) customerName,
+    final address = [
       if (order.adresseLivraison != null) order.adresseLivraison!,
       if (order.villeLivraison != null) order.villeLivraison!,
       if (order.paysLivraison != null) order.paysLivraison!,
-      if (order.telLivraison != null) order.telLivraison!,
+    ].join(', ');
+
+    final lines = <String>[
+      ...clientLines,
+      if (order.telLivraison != null &&
+          !clientLines.any((l) => l.contains(order.telLivraison!)))
+        order.telLivraison!,
+      if (address.isNotEmpty) address,
     ];
 
     await _print(
-      fileName: 'facture_commande_${order.id}.pdf',
+      fileName: 'facture_${order.displayRef.replaceAll('#', '')}.pdf',
       brand: b,
       tr: tr,
-      reference: '${tr('invoice.order')} #${order.id}',
+      reference: '${tr('invoice.order')} ${order.displayRef}',
       date: order.dateCourt,
-      infoLine: deliveryParts.isEmpty ? null : deliveryParts.join(' · '),
+      clientLines: lines,
       lines: [
         for (final item in order.produits)
           InvoiceLine(
@@ -219,9 +233,9 @@ class InvoicePdf {
       fileName: 'facture_mission_$missionId.pdf',
       brand: b,
       tr: tr,
-      reference: '${tr('invoice.mission')} #$missionId',
+      reference: '${tr('invoice.mission')} BL-$missionId',
       date: date ?? '',
-      infoLine: clientName,
+      clientLines: [if (clientName != null && clientName.isNotEmpty) clientName],
       lines: [
         InvoiceLine(
           label: missionTitle,
@@ -252,6 +266,7 @@ class InvoicePdf {
     required String periodLabel,
     String? activeUntil,
     String? date,
+    List<String> clientLines = const [],
     required String Function(String key) tr,
   }) async {
     await _print(
@@ -261,9 +276,11 @@ class InvoicePdf {
       tr: tr,
       reference: tr('invoice.subscription'),
       date: date ?? '',
-      infoLine: activeUntil == null
-          ? null
-          : '${tr('sub.active_until')} $activeUntil',
+      clientLines: [
+        ...clientLines,
+        if (activeUntil != null)
+          '${tr('sub.active_until')} $activeUntil',
+      ],
       lines: [
         InvoiceLine(
           label: '$planLabel — $periodLabel',
@@ -288,12 +305,13 @@ class InvoicePdf {
     required String Function(String key) tr,
     required String reference,
     required String date,
-    String? infoLine,
+    List<String> clientLines = const [],
     required List<InvoiceLine> lines,
     required List<(String, String, bool)> totals,
     String? footNote,
   }) async {
     final doc = pw.Document();
+    final tnkLogo = await InvoiceBrand.asset('assets/logos/logotnk.jpeg');
 
     doc.addPage(
       pw.Page(
@@ -308,24 +326,15 @@ class InvoicePdf {
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      if (brand.platformLogo != null)
-                        pw.Image(brand.platformLogo!,
-                            height: 42, fit: pw.BoxFit.contain)
-                      else
-                        pw.Text(brand.platformLabel,
-                            style: pw.TextStyle(
-                                fontSize: 24,
-                                fontWeight: pw.FontWeight.bold,
-                                color: brand.accentColor)),
-                      pw.SizedBox(height: 4),
-                      pw.Text(tr('invoice.generated_by'),
-                          style: const pw.TextStyle(
-                              fontSize: 9, color: _grey)),
-                    ],
-                  ),
+                  if (brand.platformLogo != null)
+                    pw.Image(brand.platformLogo!,
+                        height: 42, fit: pw.BoxFit.contain)
+                  else
+                    pw.Text(brand.platformLabel,
+                        style: pw.TextStyle(
+                            fontSize: 24,
+                            fontWeight: pw.FontWeight.bold,
+                            color: brand.accentColor)),
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.end,
                     children: [
@@ -381,10 +390,18 @@ class InvoicePdf {
               pw.SizedBox(height: 14),
               pw.Divider(color: _border, thickness: 1),
 
-              if (infoLine != null && infoLine.isNotEmpty) ...[
+              // ---- Bloc client ----
+              if (clientLines.where((l) => l.trim().isNotEmpty).isNotEmpty) ...[
                 pw.SizedBox(height: 8),
-                pw.Text(infoLine,
-                    style: const pw.TextStyle(fontSize: 10, color: _grey)),
+                pw.Text(tr('invoice.client').toUpperCase(),
+                    style: pw.TextStyle(
+                        fontSize: 9,
+                        fontWeight: pw.FontWeight.bold,
+                        color: _grey)),
+                pw.SizedBox(height: 2),
+                for (final l in clientLines)
+                  if (l.trim().isNotEmpty)
+                    pw.Text(l, style: const pw.TextStyle(fontSize: 10)),
               ],
               pw.SizedBox(height: 16),
 
@@ -443,7 +460,7 @@ class InvoicePdf {
 
               pw.Spacer(),
 
-              // ---- Note + pied de page ----
+              // ---- Note ----
               if (footNote != null && footNote.isNotEmpty) ...[
                 pw.Container(
                   width: double.infinity,
@@ -460,9 +477,36 @@ class InvoicePdf {
                 ),
                 pw.SizedBox(height: 10),
               ],
+
+              // ---- Pied de page TNK Synergies (papier en-tete) ----
+              pw.Divider(color: _border, thickness: 0.5),
+              pw.SizedBox(height: 6),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                crossAxisAlignment: pw.CrossAxisAlignment.center,
+                children: [
+                  if (tnkLogo != null) ...[
+                    pw.Image(tnkLogo, height: 26, fit: pw.BoxFit.contain),
+                    pw.SizedBox(width: 8),
+                  ],
+                  pw.Text(_poweredBy,
+                      style: pw.TextStyle(
+                          fontSize: 9,
+                          fontWeight: pw.FontWeight.bold,
+                          color: _blue)),
+                ],
+              ),
+              pw.SizedBox(height: 4),
               pw.Center(
-                child: pw.Text(tr('invoice.generated_by'),
-                    style: const pw.TextStyle(fontSize: 9, color: _grey)),
+                child: pw.Text(_tnkContact,
+                    textAlign: pw.TextAlign.center,
+                    style: const pw.TextStyle(fontSize: 7.5, color: _grey)),
+              ),
+              pw.SizedBox(height: 2),
+              pw.Center(
+                child: pw.Text(_tnkLegal,
+                    textAlign: pw.TextAlign.center,
+                    style: const pw.TextStyle(fontSize: 7.5, color: _grey)),
               ),
             ],
           );

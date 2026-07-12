@@ -425,7 +425,15 @@ class _SellerOrderCard extends ConsumerWidget {
     try {
       final brand = await InvoiceBrand.vendor(
           shopLogoUrl: shopLogo, shopName: shopName);
-      await InvoicePdf.printOrder(order, (k) => labels[k] ?? k, brand: brand);
+      await InvoicePdf.printOrder(
+        order,
+        (k) => labels[k] ?? k,
+        brand: brand,
+        clientLines: [
+          if (order.clientName != null) order.clientName!,
+          if (order.clientEmail != null) order.clientEmail!,
+        ],
+      );
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('$e')));
     }
@@ -448,7 +456,7 @@ class _SellerOrderCard extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${context.tr('market.order_number')} #${order.id}',
+                  '${context.tr('market.order_number')} ${order.displayRef}',
                   style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold),
                 ),

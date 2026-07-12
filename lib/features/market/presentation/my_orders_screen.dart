@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/services/invoice_pdf.dart';
+import '../../auth/application/auth_controller.dart';
 import '../application/market_providers.dart';
 import '../data/models/order.dart';
 import 'market_colors.dart';
@@ -263,7 +264,7 @@ class _OrderCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      '${context.tr('market.order_number')} #${order.id}',
+                      '${context.tr('market.order_number')} ${order.displayRef}',
                       style: const TextStyle(
                           fontSize: 15, fontWeight: FontWeight.bold),
                     ),
@@ -331,12 +332,12 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-class _OrderDetailSheet extends StatelessWidget {
+class _OrderDetailSheet extends ConsumerWidget {
   const _OrderDetailSheet({required this.order});
   final Order order;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.surface,
@@ -352,7 +353,7 @@ class _OrderDetailSheet extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  '${context.tr('market.order_number')} #${order.id}',
+                  '${context.tr('market.order_number')} ${order.displayRef}',
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -450,7 +451,7 @@ class _OrderDetailSheet extends StatelessWidget {
 
           // Impression / telechargement de la facture (point 7)
           OutlinedButton.icon(
-            onPressed: () => _printInvoice(context),
+            onPressed: () => _printInvoice(context, ref),
             icon: const Icon(Icons.print_outlined,
                 size: 18, color: MarketColors.primary),
             label: Text(context.tr('invoice.download'),
@@ -466,28 +467,21 @@ class _OrderDetailSheet extends StatelessWidget {
     );
   }
 
-  Future<void> _printInvoice(BuildContext context) async {
+  Future<void> _printInvoice(BuildContext context, WidgetRef ref) async {
     // Capture des labels et du messenger AVANT l'async gap.
-    final labels = <String, String>{
-      for (final k in const [
-        'invoice.title',
-        'invoice.order',
-        'invoice.date',
-        'invoice.item',
-        'invoice.qty',
-        'invoice.unit_price',
-        'invoice.total',
-        'invoice.subtotal',
-        'invoice.delivery',
-        'invoice.grand_total',
-        'invoice.fees_note',
-        'invoice.generated_by',
-      ])
-        k: context.tr(k),
-    };
+    final labels = invoiceLabels(context);
     final messenger = ScaffoldMessenger.of(context);
+    // Infos client = utilisateur connecte (acheteur).
+    final user = ref.read(authControllerProvider).valueOrNull;
+    final clientLines = <String>[
+      if (user != null && !user.fullName.contains('@')) user.fullName,
+      if (user != null) user.email,
+      if (user?.telephone != null && user!.telephone!.isNotEmpty)
+        user.telephone!,
+    ];
     try {
-      await InvoicePdf.printOrder(order, (k) => labels[k] ?? k);
+      await InvoicePdf.printOrder(order, (k) => labels[k] ?? k,
+          clientLines: clientLines);
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('$e')));
     }

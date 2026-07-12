@@ -46,6 +46,7 @@ enum OrderStatus {
 class Order {
   const Order({
     required this.id,
+    this.numero,
     this.statutRaw,
     this.sousTotal,
     this.fraisLivraison,
@@ -60,6 +61,9 @@ class Order {
   });
 
   final int id;
+
+  /// Reference publique horodatee (MK-jjmmaaHHiiBM) attribuee par le back.
+  final String? numero;
   final String? statutRaw;
   final num? sousTotal;
   final num? fraisLivraison;
@@ -80,6 +84,45 @@ class Order {
 
   int get itemsCount => produits.fold(0, (acc, p) => acc + p.quantite);
 
+  /// Reference affichee a l'utilisateur : jamais l'id auto-increment
+  /// (faille d'enumeration). Priorite au numero serveur ; sinon derive
+  /// de la date de commande au meme format ; '#id' en dernier recours.
+  String get displayRef {
+    if (numero != null && numero!.trim().isNotEmpty) return numero!;
+    final d = DateTime.tryParse(dateCommande ?? '');
+    if (d != null) {
+      String p(int v) => v.toString().padLeft(2, '0');
+      return 'MK-${p(d.day)}${p(d.month)}${p(d.year % 100)}${p(d.hour)}${p(d.minute)}BM';
+    }
+    return '#$id';
+  }
+
+  /// Nom du client (facture vendeur) depuis acheteur.user du payload.
+  String? get clientName {
+    final acheteur = raw['acheteur'];
+    if (acheteur is Map && acheteur['user'] is Map) {
+      final u = Map<String, dynamic>.from(acheteur['user'] as Map);
+      final parts = [u['prenom'], u['nom']]
+          .whereType<String>()
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+      if (parts.isNotEmpty) return parts.join(' ');
+      final name = u['name']?.toString();
+      if (name != null && name.trim().isNotEmpty) return name;
+    }
+    return null;
+  }
+
+  /// Email du client (facture vendeur).
+  String? get clientEmail {
+    final acheteur = raw['acheteur'];
+    if (acheteur is Map && acheteur['user'] is Map) {
+      final email = (acheteur['user'] as Map)['email']?.toString();
+      if (email != null && email.trim().isNotEmpty) return email;
+    }
+    return null;
+  }
+
   factory Order.fromJson(Map<String, dynamic> j) {
     final produits = <CartItem>[];
     if (j['produits'] is List) {
@@ -89,6 +132,7 @@ class Order {
     }
     return Order(
       id: _i(j['id']),
+      numero: _s(j['numero']),
       statutRaw: _s(j['statut']),
       sousTotal: _num(j['sous_total']),
       fraisLivraison: _num(j['frais_livraison']),

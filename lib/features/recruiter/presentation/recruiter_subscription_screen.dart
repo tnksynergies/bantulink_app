@@ -262,7 +262,8 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
     final planLabel = context.tr('rsub.pro_plan');
     final periodLabel = context.tr('subscription.annual');
     final messenger = ScaffoldMessenger.of(context);
-    final pro = ref.read(authControllerProvider).valueOrNull?.professionnelRaw;
+    final user = ref.read(authControllerProvider).valueOrNull;
+    final pro = user?.professionnelRaw;
     try {
       final brand = await InvoiceBrand.recruiter(
         companyName: pro?['nom_entreprise']?.toString(),
@@ -275,6 +276,10 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
         periodLabel: periodLabel,
         activeUntil: sub.endDateCourt,
         date: DateTime.now().toIso8601String().substring(0, 10),
+        clientLines: [
+          if (user != null && !user.fullName.contains('@')) user.fullName,
+          if (user != null) user.email,
+        ],
         tr: (k) => labels[k] ?? k,
       );
     } catch (e) {

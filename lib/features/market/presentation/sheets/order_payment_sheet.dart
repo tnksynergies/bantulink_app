@@ -134,7 +134,7 @@ class _OrderPaymentSheetState extends ConsumerState<OrderPaymentSheet> {
                 const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         Text(
-          '${context.tr('market.order_number')} #${widget.order.id} · '
+          '${context.tr('market.order_number')} ${widget.order.displayRef} · '
           '${_amount.toStringAsFixed(0)} XAF',
           textAlign: TextAlign.center,
           style:
