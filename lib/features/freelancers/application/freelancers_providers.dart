@@ -10,7 +10,16 @@ final freelancersDataSourceProvider = Provider<FreelancersRemoteDataSource>(
 
 final freelancersListProvider =
     FutureProvider.autoDispose<List<Freelancer>>((ref) async {
-  return ref.watch(freelancersDataSourceProvider).list();
+  final list = await ref.watch(freelancersDataSourceProvider).list();
+  // Du plus recent au plus ancien (tri defensif : le back trie aussi,
+  // mais on garantit l'ordre quel que soit le serveur).
+  list.sort((a, b) {
+    final da = a.createdAt ?? '';
+    final db = b.createdAt ?? '';
+    final cmp = db.compareTo(da);
+    return cmp != 0 ? cmp : b.id.compareTo(a.id);
+  });
+  return list;
 });
 
 final freelancerDetailProvider =

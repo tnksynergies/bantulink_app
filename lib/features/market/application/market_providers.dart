@@ -13,7 +13,16 @@ final marketDataSourceProvider = Provider<MarketRemoteDataSource>(
 // ---------- Catalogue ----------
 
 final productsProvider = FutureProvider.autoDispose<List<Product>>((ref) async {
-  return ref.watch(marketDataSourceProvider).listProducts();
+  final list = await ref.watch(marketDataSourceProvider).listProducts();
+  // Du plus recent au plus ancien (tri defensif : le back trie aussi,
+  // mais on garantit l'ordre quel que soit le serveur).
+  list.sort((a, b) {
+    final da = (a.raw['created_at'] ?? '').toString();
+    final db = (b.raw['created_at'] ?? '').toString();
+    final cmp = db.compareTo(da);
+    return cmp != 0 ? cmp : b.id.compareTo(a.id);
+  });
+  return list;
 });
 
 final productCategoriesProvider =

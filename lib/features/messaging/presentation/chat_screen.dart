@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/widgets/linkified_text.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/messaging_providers.dart';
 import '../data/models/message.dart';
@@ -175,8 +176,13 @@ class _Bubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(message.content ?? '',
-                style: TextStyle(color: mine ? Colors.white : AppColors.textPrimary)),
+            // Selectionnable (copie) + liens cliquables.
+            LinkifiedText(
+              message.content ?? '',
+              style: TextStyle(
+                  color: mine ? Colors.white : AppColors.textPrimary),
+              linkColor: mine ? Colors.white : AppColors.royalBlue,
+            ),
             const SizedBox(height: 2),
             Row(
               mainAxisSize: MainAxisSize.min,
