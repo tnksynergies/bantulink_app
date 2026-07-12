@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/services/invoice_pdf.dart';
 import '../../../core/subscriptions/subscriptions_providers.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/media_url.dart';
+import '../../auth/application/auth_controller.dart';
 import '../../freelancers/presentation/subscription_screen.dart'
     show SubscribeSheet;
 
@@ -29,14 +32,29 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // ---- Statut courant ----
-          if (access.hasPro && access.subscription != null)
+          if (access.hasPro && access.subscription != null) ...[
             _statusBanner(
               color: AppColors.success,
               icon: Icons.verified,
               text:
                   '${context.tr('sub.current_plan')} : ${context.tr('rsub.pro_plan')} — '
                   '${context.tr('sub.active_until')} ${access.subscription!.endDateCourt}',
-            )
+            ),
+            const SizedBox(height: 8),
+            // Facture d'abonnement : logo BantuHire + logo de l'entreprise.
+            OutlinedButton.icon(
+              onPressed: () =>
+                  _printInvoice(context, ref, access.subscription!),
+              icon: const Icon(Icons.print_outlined,
+                  size: 18, color: AppColors.royalBlue),
+              label: Text(context.tr('invoice.download'),
+                  style: const TextStyle(color: AppColors.royalBlue)),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: AppColors.royalBlue),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+          ]
           else if (access.inTrial)
             _statusBanner(
               color: AppColors.royalBlue,
@@ -236,6 +254,32 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _printInvoice(
+      BuildContext context, WidgetRef ref, ActiveSubscription sub) async {
+    final labels = invoiceLabels(context);
+    final planLabel = context.tr('rsub.pro_plan');
+    final periodLabel = context.tr('subscription.annual');
+    final messenger = ScaffoldMessenger.of(context);
+    final pro = ref.read(authControllerProvider).valueOrNull?.professionnelRaw;
+    try {
+      final brand = await InvoiceBrand.recruiter(
+        companyName: pro?['nom_entreprise']?.toString(),
+        companyLogoUrl: mediaUrl(pro?['logo']?.toString()),
+      );
+      await InvoicePdf.printSubscription(
+        brand: brand,
+        planLabel: planLabel,
+        amount: 50000,
+        periodLabel: periodLabel,
+        activeUntil: sub.endDateCourt,
+        date: DateTime.now().toIso8601String().substring(0, 10),
+        tr: (k) => labels[k] ?? k,
+      );
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
   }
 
   Widget _statusBanner(

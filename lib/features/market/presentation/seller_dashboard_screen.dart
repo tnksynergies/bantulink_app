@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/media_url.dart';
 import '../../auth/application/auth_controller.dart';
 import '../application/vendor_providers.dart';
+import '../../../core/services/invoice_pdf.dart';
 import '../data/models/order.dart';
 import '../data/models/product.dart';
 import 'market_colors.dart';
@@ -404,12 +406,33 @@ class _OrdersTab extends ConsumerWidget {
   }
 }
 
-class _SellerOrderCard extends StatelessWidget {
+class _SellerOrderCard extends ConsumerWidget {
   const _SellerOrderCard({required this.order});
   final Order order;
 
+  /// Facture vendeur : logo BantuMarket + logo de la boutique.
+  Future<void> _printInvoice(BuildContext context, WidgetRef ref) async {
+    final labels = invoiceLabels(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final vendeurRaw =
+        ref.read(authControllerProvider).valueOrNull?.raw['vendeur'];
+    String? shopName;
+    String? shopLogo;
+    if (vendeurRaw is Map) {
+      shopName = vendeurRaw['nom']?.toString();
+      shopLogo = mediaUrl(vendeurRaw['logo']?.toString());
+    }
+    try {
+      final brand = await InvoiceBrand.vendor(
+          shopLogoUrl: shopLogo, shopName: shopName);
+      await InvoicePdf.printOrder(order, (k) => labels[k] ?? k, brand: brand);
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('$e')));
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -509,6 +532,14 @@ class _SellerOrderCard extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: MarketColors.primary),
+              ),
+              const SizedBox(width: 6),
+              IconButton(
+                tooltip: context.tr('invoice.download'),
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.print_outlined,
+                    size: 20, color: MarketColors.primary),
+                onPressed: () => _printInvoice(context, ref),
               ),
             ],
           ),

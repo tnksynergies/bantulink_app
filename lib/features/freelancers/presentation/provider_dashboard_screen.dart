@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
+import '../../../core/pricing/bantulink_fees.dart';
+import '../../../core/services/invoice_pdf.dart';
 import '../../../core/theme/app_colors.dart';
 import '../application/freelancers_providers.dart';
 import '../application/missions_providers.dart';
@@ -326,7 +328,41 @@ class _MissionsTab extends ConsumerWidget {
         ));
       }
     }
+    // Facture de prestation (logo BantuLink) sur les missions terminees.
+    if (m.status == MissionStatus.terminee && (m.cout ?? 0) > 0) {
+      list.add(OutlinedButton.icon(
+        onPressed: () => _printMissionInvoice(context, m),
+        icon: const Icon(Icons.print_outlined,
+            size: 16, color: AppColors.royalBlue),
+        label: Text(context.tr('invoice.download'),
+            style: const TextStyle(color: AppColors.royalBlue)),
+      ));
+    }
     return list;
+  }
+
+  Future<void> _printMissionInvoice(BuildContext context, Mission m) async {
+    final labels = invoiceLabels(context);
+    final missionLabel = context.tr('invoice.mission');
+    final messenger = ScaffoldMessenger.of(context);
+    final amount = m.cout ?? 0;
+    try {
+      await InvoicePdf.printMission(
+        missionId: m.id,
+        missionTitle: m.titre ?? '$missionLabel #${m.id}',
+        amount: amount,
+        commissionPercent: BantulinkFees.freelanceRateFor(amount),
+        commissionAmount: BantulinkFees.freelanceFeeFor(amount),
+        netAmount: BantulinkFees.freelanceNetFor(amount),
+        date: ((m.dateFin ?? m.updatedAt) ?? '').split('T').first,
+        clientName: m.client?.nomComplet,
+        tr: (k) => labels[k] ?? k,
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('$e'), backgroundColor: AppColors.error),
+      );
+    }
   }
 }
 

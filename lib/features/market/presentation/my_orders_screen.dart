@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/services/invoice_pdf.dart';
 import '../application/market_providers.dart';
 import '../data/models/order.dart';
-import '../services/invoice_pdf.dart';
 import 'market_colors.dart';
 
 /// Espace acheteur aligne sur le BuyerDashboard web :
