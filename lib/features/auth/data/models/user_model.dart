@@ -43,24 +43,13 @@ class User {
     return raw['particulier'] != null;
   }
 
-  bool get hasRecruteurProfile {
-    final r = (roleActif ?? '').toLowerCase();
-    if (r.contains('recruteur') ||
-        r.contains('professionnel') ||
-        r.contains('employeur')) {
-      return true;
-    }
-    for (final role in roles) {
-      final n = role.toLowerCase();
-      if (n.contains('recruteur') ||
-          n.contains('professionnel') ||
-          n.contains('employeur') ||
-          n.contains('entreprise')) {
-        return true;
-      }
-    }
-    return raw['professionnel'] != null;
-  }
+  /// Un utilisateur est considere recruteur si et seulement si il a un
+  /// enregistrement `professionnel` en base. Meme regle que le backend
+  /// (User::isRecruteur = professionnel()->exists()) et que la policy
+  /// can:isRecruteur. On ne se base PAS sur les libelles de roles (qui
+  /// peuvent etre attaches sans record) ni sur d'autres heuristiques :
+  /// c'est l'existence de l'enregistrement pro qui fait autorite.
+  bool get hasRecruteurProfile => raw['professionnel'] != null;
 
   Map<String, dynamic>? get particulierRaw {
     final p = raw['particulier'];

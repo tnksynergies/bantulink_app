@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/application/auth_controller.dart';
 import '../../application/recruiter_providers.dart';
 
 /// Wrapper qui autorise l'affichage de [child] uniquement si l'utilisateur
@@ -10,12 +11,42 @@ import '../../application/recruiter_providers.dart';
 ///
 /// A poser sur chaque route /recruteur/* qui expose des donnees ou actions
 /// reservees au recruteur, pour bloquer l'acces direct via URL bar / back.
-class RecruiterGuard extends ConsumerWidget {
+class RecruiterGuard extends ConsumerStatefulWidget {
   const RecruiterGuard({super.key, required this.child});
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RecruiterGuard> createState() => _RecruiterGuardState();
+}
+
+class _RecruiterGuardState extends ConsumerState<RecruiterGuard> {
+  bool _refreshed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Recharge /user au montage : garantit une decision basee sur la donnee
+    // fraiche (l'utilisateur a pu creer/supprimer son profil pro sur un
+    // autre ecran ou depuis le web entre-temps).
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await ref.read(authControllerProvider.notifier).refreshUser();
+      } catch (_) {
+        // On garde la valeur du cache existant.
+      } finally {
+        if (mounted) {
+          ref.invalidate(isCurrentUserRecruiterProvider);
+          setState(() => _refreshed = true);
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_refreshed) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final async = ref.watch(isCurrentUserRecruiterProvider);
     return async.when(
       loading: () => const Scaffold(
@@ -54,7 +85,7 @@ class RecruiterGuard extends ConsumerWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        return child;
+        return widget.child;
       },
     );
   }

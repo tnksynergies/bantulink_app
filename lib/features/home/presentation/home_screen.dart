@@ -49,26 +49,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (_recruitLoading) return;
     setState(() => _recruitLoading = true);
 
-    bool isRecruiter;
+    // Recharge /user pour avoir la donnee fraiche (l'utilisateur a pu
+    // creer/supprimer son profil pro entre-temps), puis lit
+    // hasRecruteurProfile = existence de l'enregistrement professionnel.
+    // C'est la source d'autorite unique, exactement alignee sur le
+    // backend (User::isRecruteur = professionnel()->exists()).
+    bool isRecruiter = user?.hasRecruteurProfile == true;
     try {
-      final id = user?.id;
-      if (id == null) {
-        isRecruiter = false;
-      } else {
-        // Source d'autorite unique : /user/{id}/roles. On ne se rabat
-        // JAMAIS sur hasRecruteurProfile (qui retourne true a la seule
-        // presence de raw['professionnel']) : un vendeur ayant un profil
-        // entreprise pourrait acceder au dashboard sans avoir le role.
-        // Verification capitale : sans role confirme -> inscription.
-        final roles =
-            await ref.read(recruiterDataSourceProvider).getUserRoles(id);
-        isRecruiter = RecruiterRemoteDataSource.isRecruiterRole(roles);
-      }
+      await ref.read(authControllerProvider.notifier).refreshUser();
+      final refreshed = ref.read(authControllerProvider).valueOrNull;
+      isRecruiter = refreshed?.hasRecruteurProfile == true;
     } catch (_) {
-      // Echec API : on refuse plutot que d'ouvrir la porte par erreur.
-      // L'utilisateur ira sur /recruteur/inscription ou il pourra
-      // reessayer ou completer son inscription.
-      isRecruiter = false;
+      // Si le refresh echoue on garde la valeur pre-existante du cache
+      // (deja calculee ci-dessus). Pas de fallback laxiste.
     }
 
     if (!mounted) return;

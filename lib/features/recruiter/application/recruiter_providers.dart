@@ -203,30 +203,23 @@ final sendInvitationControllerProvider =
     AutoDisposeAsyncNotifierProvider.family<SendInvitationController, bool, int>(
         SendInvitationController.new);
 
-/// Retourne true si l'utilisateur connecte est recruteur (role
-/// "recruteur"/"professionnel"/etc.). Source d'autorite : /user/:id/roles.
-/// Verifie d'abord le cache local, puis appelle l'API en repli.
+/// Retourne true si l'utilisateur connecte est recruteur.
+///
+/// Source d'autorite : presence d'un enregistrement `professionnel`
+/// (raw['professionnel'] != null dans /user). C'est *exactement* la
+/// meme regle que le backend :
+///   User::isRecruteur() = $this->professionnel()->exists()
+/// et la policy can:isRecruteur. On ne se base PAS sur /user/:id/roles :
+/// un role "Professionnel" peut etre attache dans la table pivot sans
+/// pour autant qu'un enregistrement pro existe, ce qui creait une
+/// divergence mobile/backend (mobile ouvre le dashboard, backend refuse
+/// toutes les actions -> "This action is unauthorized").
+///
+/// Verification synchrone (pas d'appel API) puisque le champ est deja
+/// dans le payload /user charge au login.
 final isCurrentUserRecruiterProvider =
     FutureProvider.autoDispose<bool>((ref) async {
   final user = ref.watch(authControllerProvider).valueOrNull;
   if (user == null) return false;
-
-  // 1) Verification rapide sur les roles deja charges via /user
-  final localRoles = user.roles.map((r) => r.toLowerCase().trim()).toList();
-  if (RecruiterRemoteDataSource.isRecruiterRole(localRoles)) return true;
-
-  // 2) Appel API /user/:id/roles pour la source d'autorite
-  try {
-    final roles = await ref
-        .watch(recruiterDataSourceProvider)
-        .getUserRoles(user.id);
-    return RecruiterRemoteDataSource.isRecruiterRole(roles);
-  } catch (_) {
-    // 3) Echec API : refus strict. On ne se rabat PAS sur
-    // hasRecruteurProfile car il retourne true a la simple presence
-    // de raw['professionnel'] (un vendeur avec profil entreprise
-    // passerait). Le RecruiterGuard redirigera vers /recruteur/inscription
-    // ou le user pourra completer son inscription si necessaire.
-    return false;
-  }
+  return user.hasRecruteurProfile;
 });
