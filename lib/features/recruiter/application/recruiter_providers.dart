@@ -222,7 +222,11 @@ final isCurrentUserRecruiterProvider =
         .getUserRoles(user.id);
     return RecruiterRemoteDataSource.isRecruiterRole(roles);
   } catch (_) {
-    // 3) Repli tres prudent : uniquement si l'API echoue, on regarde le cache
-    return user.hasRecruteurProfile == true;
+    // 3) Echec API : refus strict. On ne se rabat PAS sur
+    // hasRecruteurProfile car il retourne true a la simple presence
+    // de raw['professionnel'] (un vendeur avec profil entreprise
+    // passerait). Le RecruiterGuard redirigera vers /recruteur/inscription
+    // ou le user pourra completer son inscription si necessaire.
+    return false;
   }
 });

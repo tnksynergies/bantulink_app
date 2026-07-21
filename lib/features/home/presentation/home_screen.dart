@@ -55,16 +55,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (id == null) {
         isRecruiter = false;
       } else {
-        // Source d'autorite : /user/{id}/roles. On ne se rabat PAS sur
-        // hasRecruteurProfile car il retourne true a la presence d'un
-        // enregistrement "professionnel" meme sans le role Recruteur.
+        // Source d'autorite unique : /user/{id}/roles. On ne se rabat
+        // JAMAIS sur hasRecruteurProfile (qui retourne true a la seule
+        // presence de raw['professionnel']) : un vendeur ayant un profil
+        // entreprise pourrait acceder au dashboard sans avoir le role.
+        // Verification capitale : sans role confirme -> inscription.
         final roles =
             await ref.read(recruiterDataSourceProvider).getUserRoles(id);
         isRecruiter = RecruiterRemoteDataSource.isRecruiterRole(roles);
       }
     } catch (_) {
-      // Uniquement si /user/{id}/roles echoue : repli prudent sur le cache.
-      isRecruiter = user?.hasRecruteurProfile == true;
+      // Echec API : on refuse plutot que d'ouvrir la porte par erreur.
+      // L'utilisateur ira sur /recruteur/inscription ou il pourra
+      // reessayer ou completer son inscription.
+      isRecruiter = false;
     }
 
     if (!mounted) return;
