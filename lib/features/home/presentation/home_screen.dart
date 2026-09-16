@@ -91,6 +91,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         final isVendor = ref.read(isCurrentUserVendorProvider);
         c.push(isVendor ? '/vendeur/dashboard' : '/devenir-vendeur');
       }),
+      _Choice('community', Icons.forum_outlined, context.tr('home.community'),
+          (c) => c.push('/communaute')),
     ];
 
     return Scaffold(

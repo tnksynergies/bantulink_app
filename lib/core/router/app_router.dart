@@ -57,6 +57,20 @@ import '../../features/market/presentation/widgets/vendor_guard.dart';
 import '../../features/market/presentation/vendor_pricing_screen.dart';
 import '../../features/market/application/vendor_providers.dart';
 import '../../features/market/data/models/product.dart';
+import '../../features/community/presentation/community_screen.dart';
+import '../../features/community/presentation/post_detail_screen.dart';
+import '../../features/community/presentation/create_post_screen.dart';
+import '../../features/chatbot/presentation/chatbot_screen.dart';
+import '../../features/chatbot/presentation/create_ticket_screen.dart';
+import '../../features/chatbot/presentation/my_tickets_screen.dart';
+import '../../features/directory/presentation/directory_screen.dart';
+import '../../features/boost/presentation/boost_packs_screen.dart';
+import '../../features/boost/presentation/my_boosts_screen.dart';
+import '../../features/promotions/presentation/promotions_screen.dart';
+import '../../features/promotions/presentation/flash_sales_screen.dart';
+import '../../features/loyalty/presentation/loyalty_screen.dart';
+import '../../features/pickup/presentation/pickup_qr_screen.dart';
+import '../../features/pickup/presentation/scan_pickup_screen.dart';
 
 final _rootKey = GlobalKey<NavigatorState>();
 final _shellKey = GlobalKey<NavigatorState>();
@@ -418,6 +432,98 @@ final routerProvider = Provider<GoRouter>((ref) {
             },
           ),
         ),
+      ),
+
+      // Communaute
+      GoRoute(
+        path: '/communaute',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const CommunityScreen(),
+      ),
+      GoRoute(
+        path: '/communaute/nouveau',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const CreatePostScreen(),
+      ),
+      GoRoute(
+        path: '/communaute/post/:id',
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) => PostDetailScreen(
+            postId: int.parse(state.pathParameters['id']!)),
+      ),
+
+      // Chatbot / FAQ / Tickets support
+      GoRoute(
+        path: '/faq',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const ChatbotScreen(),
+      ),
+      GoRoute(
+        path: '/support/nouveau',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const CreateTicketScreen(),
+      ),
+      GoRoute(
+        path: '/support/tickets',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const MyTicketsScreen(),
+      ),
+
+      // Annuaire entreprises
+      GoRoute(
+        path: '/annuaire',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const DirectoryScreen(),
+      ),
+
+      // Boost payant
+      GoRoute(
+        path: '/boost',
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return BoostPacksScreen(
+            boostableType: extra['type'] as String? ?? 'produit',
+            boostableId: extra['id'] as int? ?? 0,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/mes-boosts',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const MyBoostsScreen(),
+      ),
+
+      // Promotions / Ventes flash
+      GoRoute(
+        path: '/promotions',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const PromotionsScreen(),
+      ),
+      GoRoute(
+        path: '/ventes-flash',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const FlashSalesScreen(),
+      ),
+
+      // Fidelite
+      GoRoute(
+        path: '/fidelite',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const LoyaltyScreen(),
+      ),
+
+      // QR Code retrait
+      GoRoute(
+        path: '/retrait-qr/:commandeId',
+        parentNavigatorKey: _rootKey,
+        builder: (_, state) => PickupQrScreen(
+            commandeId: int.parse(state.pathParameters['commandeId']!)),
+      ),
+      GoRoute(
+        path: '/scanner-retrait',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) => const ScanPickupScreen(),
       ),
 
       // Navigation principale a 5 onglets
