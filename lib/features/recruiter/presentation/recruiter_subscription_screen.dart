@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/services/invoice_pdf.dart';
 import '../../../core/subscriptions/subscriptions_providers.dart';
@@ -11,18 +12,69 @@ import '../../freelancers/presentation/subscription_screen.dart'
 
 /// Abonnement recruteur — PLAN TARIFAIRE BANTUHIRE :
 ///   A. Plan Gratuit : 2 mois d'essai apres la creation du profil pro.
-///   B. Plan Pro Recruteur : 50 000 XAF/an (offres illimitees, matching,
-///      dashboard, profils candidats, badge verifie).
+///   B. Plan Pro Recruteur : 3 formules (mensuel / trimestriel / annuel).
 ///   C. Plan Entreprise / Institution : sur devis.
-class RecruiterSubscriptionScreen extends ConsumerWidget {
+class RecruiterSubscriptionScreen extends ConsumerStatefulWidget {
   const RecruiterSubscriptionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final access = ref.watch(recruiterAccessProvider);
+  ConsumerState<RecruiterSubscriptionScreen> createState() =>
+      _RecruiterSubscriptionScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(title: Text(context.tr('rsub.title'))),
+/// Formules Pro Recruteur. Les tarifs sont fixes ici et repris cote
+/// backend (PaiementController::initiatePayment grid).
+class _ProPeriod {
+  const _ProPeriod({required this.key, required this.amount, required this.unitLabel});
+  final String key; // monthly | quarterly | yearly
+  final int amount; // XAF
+  final String unitLabel; // "/ mois", "/ trimestre", "/ an"
+}
+
+const _proPeriods = [
+  _ProPeriod(key: 'monthly',   amount: 5000,  unitLabel: '/ mois'),
+  _ProPeriod(key: 'quarterly', amount: 13500, unitLabel: '/ trimestre'),
+  _ProPeriod(key: 'yearly',    amount: 50000, unitLabel: '/ an'),
+];
+
+class _RecruiterSubscriptionScreenState
+    extends ConsumerState<RecruiterSubscriptionScreen> {
+  /// Formule par defaut : annuel (meilleur rapport prix).
+  int _selectedPeriod = 2;
+
+  @override
+  Widget build(BuildContext context) {
+    final access = ref.watch(recruiterAccessProvider);
+    final period = _proPeriods[_selectedPeriod];
+
+    return PopScope(
+      // Intercepte le back materiel Android : sans ca, la route poussee
+      // dans le root navigator laissait le systeme fermer l'app au lieu
+      // de revenir a l'ecran precedent.
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        } else {
+          context.go('/accueil');
+        }
+      },
+      child: Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Retour',
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/accueil');
+            }
+          },
+        ),
+        title: Text(context.tr('rsub.title')),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -133,23 +185,56 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
                 Text(context.tr('rsub.pro_tagline'),
                     style: const TextStyle(
                         fontSize: 12, color: AppColors.textMuted)),
+                const SizedBox(height: 12),
+
+                // Selecteur de periode (mensuel / trimestriel / annuel).
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (var i = 0; i < _proPeriods.length; i++)
+                      ChoiceChip(
+                        label: Text(_periodLabel(i)),
+                        selected: _selectedPeriod == i,
+                        onSelected: (_) =>
+                            setState(() => _selectedPeriod = i),
+                        selectedColor: AppColors.royalBlue,
+                        labelStyle: TextStyle(
+                          color: _selectedPeriod == i
+                              ? Colors.white
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Text.rich(
                   TextSpan(
                     children: [
-                      const TextSpan(
-                        text: '50 000 XAF',
-                        style: TextStyle(
+                      TextSpan(
+                        text: _formatXaf(period.amount),
+                        style: const TextStyle(
                             fontSize: 26, fontWeight: FontWeight.w900),
                       ),
                       TextSpan(
-                        text: ' ${context.tr('rsub.per_year')}',
+                        text: ' ${period.unitLabel}',
                         style: const TextStyle(
                             fontSize: 12, color: AppColors.textMuted),
                       ),
                     ],
                   ),
                 ),
+                if (_selectedPeriod != 2) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Économisez avec l\'abonnement annuel (50 000 XAF / an)',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.royalBlue.withOpacity(0.9),
+                        fontStyle: FontStyle.italic),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 _b(context.tr('rsub.pro_b1')),
                 _b(context.tr('rsub.pro_b2')),
@@ -166,9 +251,9 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
                               context: context,
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              builder: (_) => const SubscribeSheet(
-                                  amount: 50000,
-                                  period: 'yearly',
+                              builder: (_) => SubscribeSheet(
+                                  amount: period.amount,
+                                  period: period.key,
                                   type: 'recruteur',
                                   plan: 'pro'),
                             ),
@@ -253,6 +338,7 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
           const SizedBox(height: 24),
         ],
       ),
+      ),
     );
   }
 
@@ -260,7 +346,12 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
       BuildContext context, WidgetRef ref, ActiveSubscription sub) async {
     final labels = invoiceLabels(context);
     final planLabel = context.tr('rsub.pro_plan');
-    final periodLabel = context.tr('subscription.annual');
+    // Retrouve la formule via la periode reelle de l'abonnement actif.
+    final matched = _proPeriods.firstWhere(
+      (p) => p.key == sub.period.toLowerCase(),
+      orElse: () => _proPeriods.last,
+    );
+    final periodLabel = matched.unitLabel.replaceFirst('/ ', '').trim();
     final messenger = ScaffoldMessenger.of(context);
     final user = ref.read(authControllerProvider).valueOrNull;
     final pro = user?.professionnelRaw;
@@ -272,7 +363,7 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
       await InvoicePdf.printSubscription(
         brand: brand,
         planLabel: planLabel,
-        amount: 50000,
+        amount: matched.amount,
         periodLabel: periodLabel,
         activeUntil: sub.endDateCourt,
         date: DateTime.now().toIso8601String().substring(0, 10),
@@ -285,6 +376,28 @@ class RecruiterSubscriptionScreen extends ConsumerWidget {
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text('$e')));
     }
+  }
+
+  String _periodLabel(int i) {
+    switch (i) {
+      case 0:
+        return 'Mensuel';
+      case 1:
+        return 'Trimestriel';
+      case 2:
+      default:
+        return 'Annuel';
+    }
+  }
+
+  String _formatXaf(int v) {
+    final s = v.toString();
+    final buf = StringBuffer();
+    for (var i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buf.write(' ');
+      buf.write(s[i]);
+    }
+    return '$buf XAF';
   }
 
   Widget _statusBanner(
