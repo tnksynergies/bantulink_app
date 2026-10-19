@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/i18n/app_localizations.dart';
@@ -38,8 +39,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
             decoration: BoxDecoration(
               color: AppColors.royalBlue.withOpacity(0.07),
               borderRadius: BorderRadius.circular(10),
-              border:
-                  Border.all(color: AppColors.royalBlue.withOpacity(0.25)),
+              border: Border.all(color: AppColors.royalBlue.withOpacity(0.25)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,8 +62,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               decoration: BoxDecoration(
                 color: AppColors.success.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(10),
-                border:
-                    Border.all(color: AppColors.success.withOpacity(0.35)),
+                border: Border.all(color: AppColors.success.withOpacity(0.35)),
               ),
               child: Row(
                 children: [
@@ -150,12 +149,14 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           const SizedBox(height: 16),
 
           // ---- Contenu de la formule choisie ----
-          if (_mode == 0) const _CommissionMode() else const _SubscriptionMode(),
+          if (_mode == 0)
+            const _CommissionMode()
+          else
+            const _SubscriptionMode(),
           const SizedBox(height: 12),
           Text(context.tr('fees.launch_pricing'),
               textAlign: TextAlign.center,
-              style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
           const SizedBox(height: 24),
         ],
       ),
@@ -215,12 +216,12 @@ class _ModeCard extends StatelessWidget {
                 color: selected ? AppColors.primary : AppColors.textMuted),
             const SizedBox(height: 8),
             Text(title,
-                style: const TextStyle(
-                    fontSize: 13, fontWeight: FontWeight.w700)),
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
             Text(subtitle,
-                style: const TextStyle(
-                    fontSize: 11, color: AppColors.textMuted)),
+                style:
+                    const TextStyle(fontSize: 11, color: AppColors.textMuted)),
           ],
         ),
       ),
@@ -279,8 +280,7 @@ class _CommissionMode extends StatelessWidget {
                       Expanded(
                           child: Text(context.tr('fees.project_value'),
                               style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700))),
+                                  fontSize: 12, fontWeight: FontWeight.w700))),
                       Text(context.tr('fees.rate'),
                           style: const TextStyle(
                               fontSize: 12, fontWeight: FontWeight.w700)),
@@ -289,8 +289,8 @@ class _CommissionMode extends StatelessWidget {
                 ),
                 for (final t in BantulinkFees.freelanceTiers)
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 7),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                     child: Row(
                       children: [
                         Expanded(
@@ -441,7 +441,7 @@ class _PlanCard extends StatelessWidget {
   }
 }
 
-/// Sheet de paiement d'abonnement (mutualise freelancer / candidat / recruteur).
+/// Sheet de paiement d'abonnement mutualise entre les differents profils.
 class SubscribeSheet extends ConsumerStatefulWidget {
   const SubscribeSheet({
     super.key,
@@ -452,8 +452,8 @@ class SubscribeSheet extends ConsumerStatefulWidget {
   });
   final num amount;
   final String period; // monthly | quarterly | yearly | annual
-  final String type; // 'freelancer' | 'candidat' | 'recruteur'
-  final String plan; // 'freelancer' | 'standard' | 'pro'
+  final String type; // freelancer | candidat | recruteur | seller
+  final String plan; // Identifiant du forfait pour le profil demande
 
   @override
   ConsumerState<SubscribeSheet> createState() => _SubscribeSheetState();
@@ -487,12 +487,11 @@ class _SubscribeSheetState extends ConsumerState<SubscribeSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('${widget.amount.toStringAsFixed(0)} XAF · ${widget.period}',
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 16)),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(
-                  child: _payBtn('Orange Money', Colors.orange, 'OM')),
+              Expanded(child: _payBtn('Orange Money', Colors.orange, 'OM')),
               const SizedBox(width: 8),
               Expanded(child: _payBtn('MTN MoMo', Colors.amber, 'MOMO')),
             ]),
@@ -590,10 +589,34 @@ class _SubscribeSheetState extends ConsumerState<SubscribeSheet> {
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _errorMessage = '$e');
+      setState(() => _errorMessage = _paymentErrorMessage(e));
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  String _paymentErrorMessage(Object error) {
+    if (error is DioException) {
+      final data = error.response?.data;
+      if (data is Map) {
+        final errors = data['errors'];
+        if (errors is Map && errors.isNotEmpty) {
+          return errors.entries.map((entry) {
+            final messages = entry.value;
+            final details =
+                messages is List ? messages.join(', ') : messages.toString();
+            return '${entry.key}: $details';
+          }).join('\n');
+        }
+        final message = data['message']?.toString();
+        if (message != null && message.isNotEmpty) return message;
+      }
+      if (data is String && data.isNotEmpty) return data;
+      if (error.message != null && error.message!.isNotEmpty) {
+        return error.message!;
+      }
+    }
+    return error.toString();
   }
 
   Widget _payBtn(String label, Color color, String value) {
@@ -651,8 +674,7 @@ class _CandidateSubscriptionScreenState
         padding: const EdgeInsets.all(16),
         children: [
           Text(context.tr('csub.subtitle'),
-              style:
-                  const TextStyle(fontSize: 14, color: AppColors.textMuted)),
+              style: const TextStyle(fontSize: 14, color: AppColors.textMuted)),
           const SizedBox(height: 16),
 
           // Abonnement Standard deja actif
@@ -662,8 +684,7 @@ class _CandidateSubscriptionScreenState
               decoration: BoxDecoration(
                 color: AppColors.success.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(10),
-                border:
-                    Border.all(color: AppColors.success.withOpacity(0.35)),
+                border: Border.all(color: AppColors.success.withOpacity(0.35)),
               ),
               child: Row(
                 children: [
@@ -756,8 +777,7 @@ class _CandidateSubscriptionScreenState
                   children: [
                     Expanded(
                       child: _PeriodChip(
-                        label:
-                            '2 950 XAF / ${context.tr('csub.quarter')}',
+                        label: '2 950 XAF / ${context.tr('csub.quarter')}',
                         selected: _quarterly,
                         onTap: () => setState(() => _quarterly = true),
                       ),
@@ -777,7 +797,8 @@ class _CandidateSubscriptionScreenState
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: '${price.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]} ')} XAF',
+                        text:
+                            '${price.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]} ')} XAF',
                         style: const TextStyle(
                             fontSize: 26, fontWeight: FontWeight.w900),
                       ),
@@ -823,8 +844,7 @@ class _CandidateSubscriptionScreenState
           const SizedBox(height: 12),
           Text(context.tr('fees.launch_pricing'),
               textAlign: TextAlign.center,
-              style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
         ],
       ),
     );
@@ -878,9 +898,7 @@ class _PeriodChip extends StatelessWidget {
               style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
-                  color: selected
-                      ? AppColors.primary
-                      : AppColors.textPrimary)),
+                  color: selected ? AppColors.primary : AppColors.textPrimary)),
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/i18n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../auth/application/auth_controller.dart';
 import '../application/missions_providers.dart';
 import '../data/models/mission.dart';
 import 'sheets/mission_payment_sheet.dart';
@@ -29,22 +30,29 @@ class MissionDetailScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                const Icon(Icons.error_outline,
+                    size: 48, color: AppColors.error),
                 const SizedBox(height: 12),
                 Text('$e', textAlign: TextAlign.center),
               ],
             ),
           ),
         ),
-        data: (m) => _MissionDetailBody(mission: m),
+        data: (m) => _MissionDetailBody(
+          mission: m,
+          isFreelancer: m.freelancerId != null &&
+              ref.watch(authControllerProvider).valueOrNull?.id ==
+                  m.freelancerId,
+        ),
       ),
     );
   }
 }
 
 class _MissionDetailBody extends ConsumerWidget {
-  const _MissionDetailBody({required this.mission});
+  const _MissionDetailBody({required this.mission, required this.isFreelancer});
   final Mission mission;
+  final bool isFreelancer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +66,8 @@ class _MissionDetailBody extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(mission.titreSafe,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(width: 8),
               MissionStatusChip(status: mission.status),
@@ -71,9 +80,13 @@ class _MissionDetailBody extends ConsumerWidget {
             children: [
               _kv(context.tr('mission.start_date'), mission.dateDebutCourt),
               _kv(context.tr('mission.end_date'), mission.dateFinCourt),
-              _kv(context.tr('mission.budget'),
-                  mission.cout != null ? '${mission.cout!.toStringAsFixed(0)} XAF' : '-'),
-              _kv(context.tr('mission.provider'), mission.freelancer?.nomComplet ?? '-'),
+              _kv(
+                  context.tr('mission.budget'),
+                  mission.cout != null
+                      ? '${mission.cout!.toStringAsFixed(0)} XAF'
+                      : '-'),
+              _kv(context.tr('mission.provider'),
+                  mission.freelancer?.nomComplet ?? '-'),
             ],
           ),
           const Divider(height: 32),
@@ -113,7 +126,8 @@ class _MissionDetailBody extends ConsumerWidget {
             ...mission.documents.map((d) => ListTile(
                   leading: const Icon(Icons.description_outlined),
                   title: Text('Document #${d.id}'),
-                  subtitle: Text(d.path, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  subtitle: Text(d.path,
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
                 )),
           ],
           const SizedBox(height: 24),
@@ -121,7 +135,7 @@ class _MissionDetailBody extends ConsumerWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              if (mission.canFinish)
+              if (!isFreelancer && mission.canFinish)
                 ElevatedButton.icon(
                   onPressed: () => showModalBottomSheet(
                     context: context,
@@ -132,9 +146,10 @@ class _MissionDetailBody extends ConsumerWidget {
                   icon: const Icon(Icons.check_circle_outline),
                   label: Text(context.tr('mission.finish')),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.success, foregroundColor: Colors.white),
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white),
                 ),
-              if (mission.canReview)
+              if (!isFreelancer && mission.canReview)
                 OutlinedButton.icon(
                   onPressed: () => showModalBottomSheet(
                     context: context,
@@ -147,7 +162,8 @@ class _MissionDetailBody extends ConsumerWidget {
                 ),
               if (mission.freelancerId != null)
                 TextButton.icon(
-                  onPressed: () => context.push('/prestataire/${mission.freelancerId}'),
+                  onPressed: () =>
+                      context.push('/prestataire/${mission.freelancerId}'),
                   icon: const Icon(Icons.person_outline),
                   label: Text(context.tr('mission.view_provider')),
                 ),
@@ -164,9 +180,12 @@ class _MissionDetailBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+          Text(label,
+              style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
           const SizedBox(height: 2),
-          Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          Text(value,
+              style:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
         ],
       ),
     );

@@ -359,8 +359,7 @@ class _ProductCard extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                          fontSize: 11,
-                          color: MarketColors.mutedForeground),
+                          fontSize: 11, color: MarketColors.mutedForeground),
                     ),
                   const SizedBox(height: 4),
                   // Etoiles orange (charte web : fill-secondary)
@@ -369,9 +368,7 @@ class _ProductCard extends ConsumerWidget {
                     children: [
                       for (var i = 0; i < 5; i++)
                         Icon(
-                          i < rating.floor()
-                              ? Icons.star
-                              : Icons.star_border,
+                          i < rating.floor() ? Icons.star : Icons.star_border,
                           size: 13,
                           color: MarketColors.accent,
                         ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/network/network_providers.dart';
 import '../data/missions_remote_data_source.dart';
 import '../data/models/mission.dart';
@@ -10,7 +11,8 @@ final missionsDataSourceProvider = Provider<MissionsRemoteDataSource>(
     (ref) => MissionsRemoteDataSource(ref.watch(dioProvider)));
 
 /// Missions du client connecte.
-final myMissionsProvider = FutureProvider.autoDispose<List<Mission>>((ref) async {
+final myMissionsProvider =
+    FutureProvider.autoDispose<List<Mission>>((ref) async {
   return ref.watch(missionsDataSourceProvider).myMissions();
 });
 
@@ -83,53 +85,108 @@ class UpdateMissionStatusController
   }
 }
 
-final updateMissionStatusControllerProvider = AutoDisposeAsyncNotifierProvider
-    .family<UpdateMissionStatusController, Mission?, int>(
-        UpdateMissionStatusController.new);
+final updateMissionStatusControllerProvider =
+    AutoDisposeAsyncNotifierProvider.family<UpdateMissionStatusController,
+        Mission?, int>(UpdateMissionStatusController.new);
 
 /// Initie le paiement mobile money + poll toutes les 5s jusqu'a success/failed.
 class PayMissionController
     extends AutoDisposeFamilyAsyncNotifier<PayMissionState, int> {
   Timer? _timer;
+  KeepAliveLink? _keepAliveLink;
+  DateTime? _pollStartedAt;
+  bool _pollInFlight = false;
+
+  String get _pendingReferenceKey => 'pending_mission_payment_$arg';
 
   @override
   Future<PayMissionState> build(int arg) async {
+    _keepAliveLink = ref.keepAlive();
     ref.onDispose(() => _timer?.cancel());
+    unawaited(_restorePendingReference());
     return const PayMissionState.idle();
   }
 
-  Future<void> initiate({required String phone, required String provider}) async {
+  Future<void> _restorePendingReference() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final reference = preferences.getString(_pendingReferenceKey);
+      if (reference == null ||
+          reference.isEmpty ||
+          state.valueOrNull?.stage != PayStage.idle) {
+        return;
+      }
+      state = AsyncValue.data(PayMissionState.polling(reference));
+      _startPolling(reference);
+    } catch (_) {
+      // The payment can still proceed normally without local restoration.
+    }
+  }
+
+  Future<void> initiate(
+      {required String phone, required String provider}) async {
     state = const AsyncValue.data(PayMissionState.initiating());
     try {
       final ref0 = await ref
           .read(missionsDataSourceProvider)
           .initiatePayment(arg, phone: phone, provider: provider);
       if (ref0 == null) {
-        state = AsyncValue.error('Reference paiement introuvable', StackTrace.current);
+        state = const AsyncValue.data(PayMissionState.failed());
+        _keepAliveLink?.close();
         return;
+      }
+      try {
+        final preferences = await SharedPreferences.getInstance();
+        await preferences.setString(_pendingReferenceKey, ref0);
+      } catch (_) {
+        // Keep polling in memory even if local persistence is unavailable.
       }
       state = AsyncValue.data(PayMissionState.polling(ref0));
       _startPolling(ref0);
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_) {
+      state = const AsyncValue.data(PayMissionState.failed());
+      _keepAliveLink?.close();
     }
   }
 
   void _startPolling(String reference) {
     _timer?.cancel();
+    _pollStartedAt = DateTime.now();
     _timer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      final status = await ref.read(missionsDataSourceProvider).paymentStatus(reference);
-      if (status == null) return;
-      if (status == 'success' || status == 'succeeded' || status == 'active' || status == 'completed') {
-        _timer?.cancel();
-        state = const AsyncValue.data(PayMissionState.success());
-        ref.invalidate(myMissionsProvider);
-        ref.invalidate(missionDetailProvider(arg));
-      } else if (status == 'failed' || status == 'error') {
-        _timer?.cancel();
-        state = const AsyncValue.data(PayMissionState.failed());
+      if (_pollInFlight) return;
+      _pollInFlight = true;
+      try {
+        final status =
+            await ref.read(missionsDataSourceProvider).paymentStatus(reference);
+        if (status == 'success' ||
+            status == 'succeeded' ||
+            status == 'active' ||
+            status == 'completed') {
+          await _finishPolling(PayMissionState.success());
+          ref.invalidate(myMissionsProvider);
+          ref.invalidate(missionDetailProvider(arg));
+        } else if (status == 'failed' || status == 'error') {
+          await _finishPolling(PayMissionState.failed());
+        } else if (DateTime.now().difference(_pollStartedAt!) >=
+                const Duration(minutes: 2) &&
+            state.valueOrNull?.stage != PayStage.pendingConfirmation) {
+          state =
+              AsyncValue.data(PayMissionState.pendingConfirmation(reference));
+        }
+      } catch (_) {
+        // A temporary status API error should not cancel the payment check.
+      } finally {
+        _pollInFlight = false;
       }
     });
+  }
+
+  Future<void> _finishPolling(PayMissionState result) async {
+    _timer?.cancel();
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(_pendingReferenceKey);
+    state = AsyncValue.data(result);
+    _keepAliveLink?.close();
   }
 }
 
@@ -138,6 +195,8 @@ class PayMissionState {
   const PayMissionState.idle() : this._(PayStage.idle);
   const PayMissionState.initiating() : this._(PayStage.initiating);
   const PayMissionState.polling(String ref) : this._(PayStage.polling, ref);
+  const PayMissionState.pendingConfirmation(String ref)
+      : this._(PayStage.pendingConfirmation, ref);
   const PayMissionState.success() : this._(PayStage.success);
   const PayMissionState.failed() : this._(PayStage.failed);
 
@@ -145,7 +204,14 @@ class PayMissionState {
   final String? reference;
 }
 
-enum PayStage { idle, initiating, polling, success, failed }
+enum PayStage {
+  idle,
+  initiating,
+  polling,
+  pendingConfirmation,
+  success,
+  failed
+}
 
 final payMissionControllerProvider = AutoDisposeAsyncNotifierProvider.family<
     PayMissionController, PayMissionState, int>(PayMissionController.new);
@@ -164,7 +230,8 @@ class LeaveNoteController extends AutoDisposeFamilyAsyncNotifier<bool, int> {
       ref.invalidate(myMissionsProvider);
       ref.invalidate(missionDetailProvider(arg));
       // Rafraichir aussi la fiche du freelancer si visible (best-effort).
-      final freelancerId = ref.read(missionDetailProvider(arg)).valueOrNull?.freelancerId;
+      final freelancerId =
+          ref.read(missionDetailProvider(arg)).valueOrNull?.freelancerId;
       if (freelancerId != null) {
         ref.invalidate(freelancerNotesProvider(freelancerId));
         ref.invalidate(freelancerDetailProvider(freelancerId));

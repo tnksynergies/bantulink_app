@@ -4,6 +4,7 @@ const Map<String, Map<String, String>> kStrings = {
     // commun
     'common.retry': 'Réessayer',
     'common.cancel': 'Annuler',
+    'common.close': 'Fermer',
     'common.save': 'Enregistrer',
     'common.next': 'Suivant',
     'common.back': 'Précédent',
@@ -31,7 +32,8 @@ const Map<String, Map<String, String>> kStrings = {
     'jobs.offers': 'Offres',
     'jobs.my_applications': 'Mes candidatures',
     'boutique.coming_soon': 'Le Monde Commerce arrive bientôt',
-    'boutique.coming_soon_sub': 'Achetez et vendez en toute simplicité, très bientôt.',
+    'boutique.coming_soon_sub':
+        'Achetez et vendez en toute simplicité, très bientôt.',
     'messages.title': 'Messagerie',
     'messages.empty': 'Aucune conversation pour le moment.',
     'messages.search': 'Rechercher une conversation...',
@@ -39,17 +41,21 @@ const Map<String, Map<String, String>> kStrings = {
     'messages.no_messages': 'Pas de messages',
     'messages.online': 'En ligne',
     'messages.offline': 'Hors ligne',
-    'messages.start_hint': 'Postulez à une offre pour démarrer une discussion avec le recruteur.',
+    'messages.start_hint':
+        'Postulez à une offre pour démarrer une discussion avec le recruteur.',
     'splash.tagline': 'Une seule app, deux mondes',
     'onboarding.skip': 'Passer',
     'onboarding.next': 'Suivant',
     'onboarding.start': 'Commencer',
     'onboarding.s1_title': 'Trouvez un emploi',
-    'onboarding.s1_text': 'Postulez en un clic et discutez directement avec les recruteurs.',
+    'onboarding.s1_text':
+        'Postulez en un clic et discutez directement avec les recruteurs.',
     'onboarding.s2_title': 'Achetez & vendez',
-    'onboarding.s2_text': 'Votre boutique en ligne, des paiements sécurisés et des livraisons suivies.',
+    'onboarding.s2_text':
+        'Votre boutique en ligne, des paiements sécurisés et des livraisons suivies.',
     'onboarding.s3_title': 'Connectez-vous',
-    'onboarding.s3_text': 'Freelances, recruteurs, vendeurs et acheteurs réunis au même endroit.',
+    'onboarding.s3_text':
+        'Freelances, recruteurs, vendeurs et acheteurs réunis au même endroit.',
 
     // auth - connexion
     'auth.welcome_back': 'Content de vous revoir',
@@ -167,12 +173,17 @@ const Map<String, Map<String, String>> kStrings = {
     'mission.pay.select_provider': 'Choisissez votre opérateur',
     'mission.pay.phone_hint': 'Ex: 699123456',
     'mission.pay.confirm': 'Confirmer le paiement',
-    'mission.pay.validation_required': 'Validez la transaction sur votre téléphone.',
-    'pay.ussd_hint': 'Aucune fenêtre sur votre téléphone ? Composez #150*50# (Orange Money) ou *126# (MTN MoMo) pour valider le paiement en attente.',
+    'mission.pay.validation_required':
+        'Validez la transaction sur votre téléphone.',
+    'pay.ussd_hint':
+        'Aucune fenêtre sur votre téléphone ? Composez #150*50# (Orange Money) ou *126# (MTN MoMo) pour valider le paiement en attente.',
     'mission.pay.success': 'Paiement confirmé. Prestation terminée.',
     'mission.pay.failed': 'Le paiement a échoué.',
+    'mission.pay.pending_confirmation':
+        'La confirmation prend plus de temps que prévu. Le suivi continue en arrière-plan. Vérifiez le statut de la mission avant de relancer un paiement.',
     'mission.pay.cash_marked': 'Prestation marquée comme réglée en espèces.',
-    'mission.pay.invalid_phone': 'Numéro invalide (9 chiffres, commence par 6).',
+    'mission.pay.invalid_phone':
+        'Numéro invalide (9 chiffres, commence par 6).',
     'mission.pay.cash_direct_done': 'Prestation terminée (règlement direct).',
 
     // avis
@@ -186,14 +197,16 @@ const Map<String, Map<String, String>> kStrings = {
     // devenir prestataire
     'become.title': 'Devenir prestataire',
     'become.hero': 'Proposez vos services sur BantuHire',
-    'become.subtitle': 'Trouvez des clients près de chez vous et développez votre activité.',
+    'become.subtitle':
+        'Trouvez des clients près de chez vous et développez votre activité.',
     'become.benefits_title': 'Pourquoi rejoindre BantuHire ?',
     'become.benefit1_title': 'Visibilité accrue',
     'become.benefit1_desc': 'Accédez à des milliers de clients potentiels.',
     'become.benefit2_title': 'Gestion simplifiée',
     'become.benefit2_desc': 'Gérez vos demandes et paiements en un endroit.',
     'become.benefit3_title': 'Paiements sécurisés',
-    'become.benefit3_desc': 'Recevez vos revenus sur mobile money en toute sécurité.',
+    'become.benefit3_desc':
+        'Recevez vos revenus sur mobile money en toute sécurité.',
     'become.benefit4_title': 'Support dédié',
     'become.benefit4_desc': 'Une équipe pour vous accompagner au quotidien.',
     'become.form_title': 'Inscription prestataire',
@@ -204,7 +217,8 @@ const Map<String, Map<String, String>> kStrings = {
     'become.city': 'Ville',
     'become.country': 'Pays',
     'become.title_pro': 'Titre professionnel',
-    'become.title_pro_hint': 'Ex: Plombier certifié, Coiffeuse professionnelle...',
+    'become.title_pro_hint':
+        'Ex: Plombier certifié, Coiffeuse professionnelle...',
     'become.min_amount': 'Montant minimum (XAF)',
     'become.description': 'Description de vos services',
     'become.description_hint': 'Présentez votre expérience, vos spécialités...',
@@ -212,7 +226,8 @@ const Map<String, Map<String, String>> kStrings = {
     'become.photo_couverture': 'Photo de couverture',
     'become.pick_photo': 'Choisir',
     'become.competences': 'Compétences',
-    'become.competences_hint': 'Séparez par des virgules (ex: Plomberie, Dépannage, Réhabilitation)',
+    'become.competences_hint':
+        'Séparez par des virgules (ex: Plomberie, Dépannage, Réhabilitation)',
     'become.submit': "S'inscrire comme prestataire",
     'become.success': 'Votre profil de prestataire a été créé.',
 
@@ -226,7 +241,8 @@ const Map<String, Map<String, String>> kStrings = {
     'provider.stats_active': 'Missions en cours',
     'provider.stats_rating': 'Note moyenne',
     'provider.edit_profile': 'Modifier le profil',
-    'provider.no_realisations': 'Ajoutez vos réalisations pour attirer les clients.',
+    'provider.no_realisations':
+        'Ajoutez vos réalisations pour attirer les clients.',
     'provider.add_realisation': 'Ajouter une réalisation',
     'provider.no_missions_provider': 'Aucune mission reçue pour le moment.',
     'provider.accept': 'Accepter',
@@ -263,7 +279,8 @@ const Map<String, Map<String, String>> kStrings = {
     'subscription.active_plan': 'Plan actif',
     'subscription.expires_on': 'Expire le',
     'subscription.no_active': 'Aucun abonnement actif.',
-    'subscription.choose_plan': 'Choisissez un plan pour booster votre visibilité.',
+    'subscription.choose_plan':
+        'Choisissez un plan pour booster votre visibilité.',
     'subscription.monthly': 'Mensuel',
     'subscription.annual': 'Annuel',
     'subscription.popular': 'Recommandé',
@@ -288,7 +305,8 @@ const Map<String, Map<String, String>> kStrings = {
 
     // profil utilisateur
     'profile.title': 'Profil',
-    'profile.complete_candidate_hint': 'Complétez votre profil candidat pour pouvoir postuler.',
+    'profile.complete_candidate_hint':
+        'Complétez votre profil candidat pour pouvoir postuler.',
     'profile.my_candidate_profile': 'Mon profil candidat',
     'profile.edit_info': 'Modifier mes informations',
     'profile.complete_profile': 'Compléter mon profil',
@@ -310,18 +328,22 @@ const Map<String, Map<String, String>> kStrings = {
 
     // mot de passe oublié
     'forgot.title': 'Mot de passe oublié',
-    'forgot.subtitle': 'Entre ton adresse email. Nous t\'enverrons un lien pour réinitialiser ton mot de passe.',
+    'forgot.subtitle':
+        'Entre ton adresse email. Nous t\'enverrons un lien pour réinitialiser ton mot de passe.',
     'forgot.email_label': 'Adresse email',
     'forgot.email_hint': 'Entre ton adresse email',
     'forgot.submit': 'Envoyer le lien',
     'forgot.success_title': 'Vérifie ta boîte mail',
-    'forgot.success_message': 'Nous t\'avons envoyé un lien pour réinitialiser ton mot de passe.',
+    'forgot.success_message':
+        'Nous t\'avons envoyé un lien pour réinitialiser ton mot de passe.',
     'forgot.back_to_login': 'Retour à la connexion',
-    'forgot.check_spam': 'Pense à vérifier ton dossier spam si tu ne trouves rien.',
+    'forgot.check_spam':
+        'Pense à vérifier ton dossier spam si tu ne trouves rien.',
 
     // réinitialisation
     'reset.title': 'Nouveau mot de passe',
-    'reset.subtitle': 'Choisis un nouveau mot de passe sécurisé pour ton compte.',
+    'reset.subtitle':
+        'Choisis un nouveau mot de passe sécurisé pour ton compte.',
     'reset.token_label': 'Code / token',
     'reset.token_hint': 'Colle le token reçu dans ton email',
     'reset.email_label': 'Adresse email du compte',
@@ -333,15 +355,18 @@ const Map<String, Map<String, String>> kStrings = {
 
     // vérification email
     'verify.title': 'Vérifie ton email',
-    'verify.subtitle': 'Nous t\'avons envoyé un lien de vérification. Clique dessus pour activer ton compte.',
+    'verify.subtitle':
+        'Nous t\'avons envoyé un lien de vérification. Clique dessus pour activer ton compte.',
     'verify.no_email_received': 'Tu n\'as rien reçu ?',
     'verify.resend': 'Renvoyer l\'email',
     'verify.resent': 'Email de vérification renvoyé.',
     'verify.email_label': 'Adresse email du compte',
     'verify.instructions_title': 'Comment activer ton compte',
     'verify.instruction_1': 'Ouvre l\'email envoyé par BantuLink.',
-    'verify.instruction_2': 'Clique sur le lien "Vérifier mon email" contenu dans l\'email.',
-    'verify.instruction_3': 'Ton compte sera activé et tu pourras te connecter.',
+    'verify.instruction_2':
+        'Clique sur le lien "Vérifier mon email" contenu dans l\'email.',
+    'verify.instruction_3':
+        'Ton compte sera activé et tu pourras te connecter.',
 
     // notifications
     'notif.title': 'Notifications',
@@ -370,14 +395,17 @@ const Map<String, Map<String, String>> kStrings = {
     // marketplace - boutique
     'market.title': 'Boutique',
     'market.hero_title': 'Le marché africain à portée de main',
-    'market.hero_subtitle': 'Achetez et vendez en toute confiance sur BantuMarket.',
+    'market.hero_subtitle':
+        'Achetez et vendez en toute confiance sur BantuMarket.',
     'market.by_seller': 'par',
     'market.pay_now': 'Payer maintenant',
     'market.pay_later': 'Payer plus tard',
     'market.payment_title': 'Paiement de la commande',
-    'market.payment_initiated': 'Paiement initié. Validez sur votre téléphone (USSD).',
+    'market.payment_initiated':
+        'Paiement initié. Validez sur votre téléphone (USSD).',
     'market.payment_success': 'Paiement confirmé ! Merci pour votre achat.',
-    'market.payment_failed': 'Le paiement a échoué. Vous pourrez réessayer depuis vos commandes.',
+    'market.payment_failed':
+        'Le paiement a échoué. Vous pourrez réessayer depuis vos commandes.',
     'market.payments_history': 'Historique des paiements',
     'market.no_payments': 'Aucun paiement pour le moment.',
     'market.seller_orders': 'Commandes reçues',
@@ -444,7 +472,8 @@ const Map<String, Map<String, String>> kStrings = {
     // vendeur
     'market.become_seller': 'Devenir vendeur',
     'market.seller_hero': 'Vendez vos produits sur BantuMarket',
-    'market.seller_subtitle': 'Créez votre boutique en ligne et touchez des milliers d\'acheteurs.',
+    'market.seller_subtitle':
+        'Créez votre boutique en ligne et touchez des milliers d\'acheteurs.',
     'market.shop_name': 'Nom de la boutique',
     'market.shop_email': 'Email professionnel',
     'market.shop_description': 'Description de la boutique',
@@ -456,7 +485,8 @@ const Map<String, Map<String, String>> kStrings = {
     'market.seller_created': 'Boutique créée avec succès.',
     'market.seller_dashboard': 'Ma boutique',
     'market.my_products': 'Mes produits',
-    'market.no_seller_products': 'Aucun produit. Ajoutez votre premier produit.',
+    'market.no_seller_products':
+        'Aucun produit. Ajoutez votre premier produit.',
     'market.add_product': 'Ajouter un produit',
     'market.edit_product': 'Modifier le produit',
     'market.new_product': 'Nouveau produit',
@@ -474,11 +504,40 @@ const Map<String, Map<String, String>> kStrings = {
     'market.confirm_delete_product': 'Supprimer ce produit ?',
     'market.seller_wallet': 'Portefeuille',
 
+    // abonnement vendeur et boosts de visibilite
+    'seller_sub.title': 'Abonnement vendeur',
+    'seller_sub.subtitle':
+        'Choisissez un abonnement pour votre boutique ou boostez sa visibilité.',
+    'seller_sub.shop_plan': 'Abonnement boutique',
+    'seller_sub.shop_desc': 'Votre e-commerce clé en main',
+    'seller_sub.shop_features_title': 'Fonctionnalités incluses',
+    'seller_sub.feature.catalog': 'Catalogue produits illimité',
+    'seller_sub.feature.cart': 'Panier et paiement sécurisé',
+    'seller_sub.feature.orders': 'Gestion des commandes',
+    'seller_sub.feature.customer_space': 'Espace client',
+    'seller_sub.feature.marketing': 'Outils marketing de base',
+    'seller_sub.feature.support': 'Support client 24/7',
+    'seller_sub.visibility_title': 'Visibilité & marketing',
+    'seller_sub.visibility_subtitle':
+        'Mettez vos produits et votre boutique en avant pour une durée définie.',
+    'seller_sub.subscribe': 'Souscrire à l’abonnement',
+    'seller_sub.boost': 'Booster ma visibilité',
+    'seller_sub.plan.starter': 'Starter',
+    'seller_sub.plan.pro': 'Pro',
+    'seller_sub.plan.business': 'Business',
+    'seller_sub.period.monthly': 'Mensuel',
+    'seller_sub.period.quarterly': 'Trimestriel',
+    'seller_sub.period.annual': 'Annuel',
+    'seller_sub.period.3days': '3 jours',
+    'seller_sub.period.weekly': 'Semaine',
+
     // tarification (stratégie de lancement)
-    'fees.vendor_banner': 'Commission BantuLink : 5,5 % tout compris sur chaque vente finalisée (traitement des paiements inclus). Aucune déduction multiple.',
+    'fees.vendor_banner':
+        'Commission BantuLink : 5,5 % tout compris sur chaque vente finalisée (traitement des paiements inclus). Aucune déduction multiple.',
     'fees.vendor_pricing_title': 'Tarifs & commissions',
     'fees.vendor_pricing_headline': 'Frais de Marché Simplifié Tout-en-Un',
-    'fees.vendor_pricing_body': 'BantuLink prélève une commission fixe de 5,5 % sur les ventes réalisées. Ces frais couvrent le traitement des paiements et l\'utilisation de notre place de marché sécurisée.',
+    'fees.vendor_pricing_body':
+        'BantuLink prélève une commission fixe de 5,5 % sur les ventes réalisées. Ces frais couvrent le traitement des paiements et l\'utilisation de notre place de marché sécurisée.',
     'fees.no_hidden': 'Aucun frais caché, aucune déduction multiple.',
     'fees.wallet_title': 'Avantages du Portefeuille BantuLink',
     'fees.wallet_b1': 'Payer vos abonnements à la plateforme',
@@ -497,9 +556,11 @@ const Map<String, Map<String, String>> kStrings = {
     // abonnement freelance (2 options)
     'fsub.mode_title': 'Choisissez votre formule',
     'fsub.mode_commission': 'Commission par projet',
-    'fsub.mode_commission_desc': 'Sans engagement. Une commission par paliers est prélevée uniquement sur les missions payées via la plateforme.',
+    'fsub.mode_commission_desc':
+        'Sans engagement. Une commission par paliers est prélevée uniquement sur les missions payées via la plateforme.',
     'fsub.mode_subscription': 'Abonnement',
-    'fsub.mode_subscription_desc': 'Payez un forfait fixe et profitez des mêmes services en illimité.',
+    'fsub.mode_subscription_desc':
+        'Payez un forfait fixe et profitez des mêmes services en illimité.',
     'fsub.same_services': 'Tous les plans incluent les mêmes services',
     'fsub.svc_visibility': 'Visibilité dans la recherche',
     'fsub.svc_unlimited': 'Réponses illimitées aux demandes',
@@ -520,7 +581,8 @@ const Map<String, Map<String, String>> kStrings = {
     'csub.free_b4': 'Candidatures limitées',
     'csub.free_b5': 'Alertes emploi basiques',
     'csub.premium_plan': 'Plan Standard',
-    'csub.premium_tagline': 'Plus de visibilité, priorité dans les candidatures',
+    'csub.premium_tagline':
+        'Plus de visibilité, priorité dans les candidatures',
     'csub.b1': 'Matching des offres d\'emploi',
     'csub.b2': 'Visibilité du profil par les recruteurs',
     'csub.b3': 'Postuler à plusieurs offres',
@@ -536,7 +598,8 @@ const Map<String, Map<String, String>> kStrings = {
     'rsub.title': 'Abonnement Recruteur',
     'rsub.subtitle': 'Recrutez les meilleurs profils.',
     'rsub.free_plan': 'Plan Gratuit',
-    'rsub.free_desc': '2 mois d\'essai gratuit, ensuite souscription au plan Pro Recruteur.',
+    'rsub.free_desc':
+        '2 mois d\'essai gratuit, ensuite souscription au plan Pro Recruteur.',
     'rsub.pro_plan': 'Plan Pro Recruteur',
     'rsub.pro_tagline': 'Offres illimitées, recherche avancée, filtrage',
     'rsub.pro_b1': 'Publier plusieurs offres',
@@ -545,17 +608,20 @@ const Map<String, Map<String, String>> kStrings = {
     'rsub.pro_b4': 'Consulter les profils des candidats',
     'rsub.pro_b5': 'Badge vérifié',
     'rsub.enterprise_plan': 'Plan Entreprise / Institution',
-    'rsub.enterprise_desc': 'Sur devis — grandes entreprises, ONG, administrations.',
+    'rsub.enterprise_desc':
+        'Sur devis — grandes entreprises, ONG, administrations.',
     'rsub.contact_us': 'Nous contacter',
     'rsub.trial_left': 'Essai gratuit : {days} jours restants',
-    'rsub.trial_over': 'Votre période d\'essai est terminée. Passez au plan Pro pour continuer à recruter.',
+    'rsub.trial_over':
+        'Votre période d\'essai est terminée. Passez au plan Pro pour continuer à recruter.',
     'rsub.per_year': '/ an',
 
     // statut d'abonnement + verrouillage des modules
     'sub.active_until': 'Abonnement actif jusqu\'au',
     'sub.current_plan': 'Votre plan actuel',
     'gate.locked_title': 'Fonctionnalité réservée',
-    'gate.candidate_locked': 'Réservée au plan Standard. Abonnez-vous pour débloquer le matching des offres et le contact des recruteurs.',
+    'gate.candidate_locked':
+        'Réservée au plan Standard. Abonnez-vous pour débloquer le matching des offres et le contact des recruteurs.',
     'gate.recruiter_locked': 'Réservée au plan Pro Recruteur.',
     'gate.subscribe_now': 'S\'abonner maintenant',
 
@@ -566,7 +632,8 @@ const Map<String, Map<String, String>> kStrings = {
     'cmatch.tile_sub': 'Les offres qui correspondent à votre profil',
 
     // freelance : règle de souscription
-    'fsub.first_free': 'Première prestation gratuite. Dès la deuxième, choisissez votre formule : commission par projet ou abonnement mensuel.',
+    'fsub.first_free':
+        'Première prestation gratuite. Dès la deuxième, choisissez votre formule : commission par projet ou abonnement mensuel.',
     'fsub.active_badge': 'Abonnement actif',
 
     // matching recruteur
@@ -591,12 +658,14 @@ const Map<String, Map<String, String>> kStrings = {
     'invoice.subtotal': 'Sous-total',
     'invoice.delivery': 'Livraison',
     'invoice.grand_total': 'Total à payer',
-    'invoice.fees_note': 'Prix tout compris — la commission plateforme de 5,5 % est incluse et supportée par le vendeur.',
+    'invoice.fees_note':
+        'Prix tout compris — la commission plateforme de 5,5 % est incluse et supportée par le vendeur.',
     'invoice.generated_by': 'Powered by TNK Synergies LTD.',
     'invoice.client': 'Client',
     'invoice.mission': 'Prestation',
     'invoice.subscription': 'Abonnement',
-    'invoice.freelance_note': 'Commission BantuLink selon le palier de la valeur du projet (10 / 8,5 / 6,75 / 5,5 %). Le net indiqué est le montant perçu par le prestataire.',
+    'invoice.freelance_note':
+        'Commission BantuLink selon le palier de la valeur du projet (10 / 8,5 / 6,75 / 5,5 %). Le net indiqué est le montant perçu par le prestataire.',
 
     // formulaire d'offre (création / édition)
     'offer.step_offer': 'Offre',
@@ -648,7 +717,8 @@ const Map<String, Map<String, String>> kStrings = {
     'offer.recap_experience': 'Expérience',
     'offer.recap_salary': 'Rémunération',
     'offer.recap_deadline': 'Date limite',
-    'offer.preview_check': 'Vérifiez les informations puis appuyez sur Publier.',
+    'offer.preview_check':
+        'Vérifiez les informations puis appuyez sur Publier.',
     'offer.publish': 'Publier',
     'offer.published': 'Offre publiée avec succès.',
     'offer.updated': 'Offre mise à jour avec succès.',
@@ -673,7 +743,8 @@ const Map<String, Map<String, String>> kStrings = {
     'recruiter.new_offer': 'Publier une offre',
 
     // recruiter offers
-    'recruiter.offers_empty': 'Aucune offre publiée. Créez votre première offre.',
+    'recruiter.offers_empty':
+        'Aucune offre publiée. Créez votre première offre.',
     'recruiter.offer_actions': 'Actions',
     'recruiter.edit_offer': 'Modifier',
     'recruiter.delete_offer': 'Supprimer',
@@ -755,7 +826,8 @@ const Map<String, Map<String, String>> kStrings = {
     'chatbot.message': 'Message',
     'chatbot.priority': 'Priorité',
     'chatbot.send_ticket': 'Envoyer le ticket',
-    'chatbot.ticket_created': 'Ticket créé. Notre équipe vous répondra rapidement.',
+    'chatbot.ticket_created':
+        'Ticket créé. Notre équipe vous répondra rapidement.',
 
     // annuaire
     'directory.title': 'Annuaire entreprises',
@@ -797,15 +869,18 @@ const Map<String, Map<String, String>> kStrings = {
 
     // QR Code retrait
     'pickup.qrTitle': 'Code de retrait',
-    'pickup.showToSeller': 'Présentez ce QR code au vendeur pour retirer votre commande.',
+    'pickup.showToSeller':
+        'Présentez ce QR code au vendeur pour retirer votre commande.',
     'pickup.validFor48h': 'Valide 48 heures',
     'pickup.scanTitle': 'Scanner un retrait',
-    'pickup.scanInstructions': 'Scannez le QR code du client pour valider le retrait.',
+    'pickup.scanInstructions':
+        'Scannez le QR code du client pour valider le retrait.',
     'pickup.validated': 'Retrait validé !',
   },
   'en': {
     'common.retry': 'Retry',
     'common.cancel': 'Cancel',
+    'common.close': 'Close',
     'common.save': 'Save',
     'common.next': 'Next',
     'common.back': 'Back',
@@ -839,7 +914,8 @@ const Map<String, Map<String, String>> kStrings = {
     'messages.no_messages': 'No messages',
     'messages.online': 'Online',
     'messages.offline': 'Offline',
-    'messages.start_hint': 'Apply to an offer to start a chat with the recruiter.',
+    'messages.start_hint':
+        'Apply to an offer to start a chat with the recruiter.',
     'splash.tagline': 'One app, two worlds',
     'onboarding.skip': 'Skip',
     'onboarding.next': 'Next',
@@ -847,9 +923,11 @@ const Map<String, Map<String, String>> kStrings = {
     'onboarding.s1_title': 'Find a job',
     'onboarding.s1_text': 'Apply in one tap and chat directly with recruiters.',
     'onboarding.s2_title': 'Buy & sell',
-    'onboarding.s2_text': 'Your online shop, secure payments and tracked deliveries.',
+    'onboarding.s2_text':
+        'Your online shop, secure payments and tracked deliveries.',
     'onboarding.s3_title': 'Connect & grow',
-    'onboarding.s3_text': 'Freelancers, recruiters, sellers and buyers in one place.',
+    'onboarding.s3_text':
+        'Freelancers, recruiters, sellers and buyers in one place.',
 
     'auth.welcome_back': 'Welcome back',
     'auth.login_subtitle': 'Sign in to continue on BantuLink.',
@@ -962,10 +1040,14 @@ const Map<String, Map<String, String>> kStrings = {
     'mission.pay.select_provider': 'Choose your provider',
     'mission.pay.phone_hint': 'e.g. 699123456',
     'mission.pay.confirm': 'Confirm payment',
-    'mission.pay.validation_required': 'Validate the transaction on your phone.',
-    'pay.ussd_hint': 'No prompt on your phone? Dial #150*50# (Orange Money) or *126# (MTN MoMo) to confirm the pending payment.',
+    'mission.pay.validation_required':
+        'Validate the transaction on your phone.',
+    'pay.ussd_hint':
+        'No prompt on your phone? Dial #150*50# (Orange Money) or *126# (MTN MoMo) to confirm the pending payment.',
     'mission.pay.success': 'Payment confirmed. Service completed.',
     'mission.pay.failed': 'Payment failed.',
+    'mission.pay.pending_confirmation':
+        'Confirmation is taking longer than expected. Tracking continues in the background. Check the mission status before trying another payment.',
     'mission.pay.cash_marked': 'Service marked as paid in cash.',
     'mission.pay.invalid_phone': 'Invalid number (9 digits starting with 6).',
     'mission.pay.cash_direct_done': 'Service finished (direct payment).',
@@ -997,15 +1079,18 @@ const Map<String, Map<String, String>> kStrings = {
     'become.city': 'City',
     'become.country': 'Country',
     'become.title_pro': 'Professional title',
-    'become.title_pro_hint': 'e.g. Certified plumber, Professional hairdresser...',
+    'become.title_pro_hint':
+        'e.g. Certified plumber, Professional hairdresser...',
     'become.min_amount': 'Minimum amount (XAF)',
     'become.description': 'Description of your services',
-    'become.description_hint': 'Introduce yourself, your experience, your specialties...',
+    'become.description_hint':
+        'Introduce yourself, your experience, your specialties...',
     'become.photo_profil': 'Profile photo',
     'become.photo_couverture': 'Cover photo',
     'become.pick_photo': 'Pick',
     'become.competences': 'Skills',
-    'become.competences_hint': 'Comma-separated (e.g. Plumbing, Repair, Renovation)',
+    'become.competences_hint':
+        'Comma-separated (e.g. Plumbing, Repair, Renovation)',
     'become.submit': 'Register as provider',
     'become.success': 'Your provider profile has been created.',
 
@@ -1076,7 +1161,8 @@ const Map<String, Map<String, String>> kStrings = {
 
     // profile
     'profile.title': 'Profile',
-    'profile.complete_candidate_hint': 'Complete your candidate profile to apply.',
+    'profile.complete_candidate_hint':
+        'Complete your candidate profile to apply.',
     'profile.my_candidate_profile': 'My candidate profile',
     'profile.edit_info': 'Edit my information',
     'profile.complete_profile': 'Complete my profile',
@@ -1098,7 +1184,8 @@ const Map<String, Map<String, String>> kStrings = {
 
     // forgot password
     'forgot.title': 'Forgot password',
-    'forgot.subtitle': 'Enter your email address. We will send you a link to reset your password.',
+    'forgot.subtitle':
+        'Enter your email address. We will send you a link to reset your password.',
     'forgot.email_label': 'Email address',
     'forgot.email_hint': 'Enter your email address',
     'forgot.submit': 'Send reset link',
@@ -1121,7 +1208,8 @@ const Map<String, Map<String, String>> kStrings = {
 
     // verify email
     'verify.title': 'Verify your email',
-    'verify.subtitle': 'We have sent you a verification link. Click it to activate your account.',
+    'verify.subtitle':
+        'We have sent you a verification link. Click it to activate your account.',
     'verify.no_email_received': 'Did not receive it?',
     'verify.resend': 'Resend email',
     'verify.resent': 'Verification email resent.',
@@ -1129,7 +1217,8 @@ const Map<String, Map<String, String>> kStrings = {
     'verify.instructions_title': 'How to activate your account',
     'verify.instruction_1': 'Open the email sent by BantuLink.',
     'verify.instruction_2': 'Click the "Verify my email" link inside.',
-    'verify.instruction_3': 'Your account will be activated and you can sign in.',
+    'verify.instruction_3':
+        'Your account will be activated and you can sign in.',
 
     // notifications
     'notif.title': 'Notifications',
@@ -1163,7 +1252,8 @@ const Map<String, Map<String, String>> kStrings = {
     'market.pay_now': 'Pay now',
     'market.pay_later': 'Pay later',
     'market.payment_title': 'Order payment',
-    'market.payment_initiated': 'Payment initiated. Validate on your phone (USSD).',
+    'market.payment_initiated':
+        'Payment initiated. Validate on your phone (USSD).',
     'market.payment_success': 'Payment confirmed! Thank you for your purchase.',
     'market.payment_failed': 'Payment failed. You can retry from your orders.',
     'market.payments_history': 'Payment history',
@@ -1228,7 +1318,8 @@ const Map<String, Map<String, String>> kStrings = {
 
     'market.become_seller': 'Become a seller',
     'market.seller_hero': 'Sell your products on BantuMarket',
-    'market.seller_subtitle': 'Create your online shop and reach thousands of buyers.',
+    'market.seller_subtitle':
+        'Create your online shop and reach thousands of buyers.',
     'market.shop_name': 'Shop name',
     'market.shop_email': 'Business email',
     'market.shop_description': 'Shop description',
@@ -1258,11 +1349,40 @@ const Map<String, Map<String, String>> kStrings = {
     'market.confirm_delete_product': 'Delete this product?',
     'market.seller_wallet': 'Wallet',
 
+    // seller subscription and visibility boosts
+    'seller_sub.title': 'Seller subscription',
+    'seller_sub.subtitle':
+        'Choose a shop subscription or boost its visibility.',
+    'seller_sub.shop_plan': 'Shop subscription',
+    'seller_sub.shop_desc': 'Your turnkey e-commerce solution',
+    'seller_sub.shop_features_title': 'Included features',
+    'seller_sub.feature.catalog': 'Unlimited product catalog',
+    'seller_sub.feature.cart': 'Shopping cart and secure payment',
+    'seller_sub.feature.orders': 'Order management',
+    'seller_sub.feature.customer_space': 'Customer space',
+    'seller_sub.feature.marketing': 'Basic marketing tools',
+    'seller_sub.feature.support': '24/7 customer support',
+    'seller_sub.visibility_title': 'Visibility & marketing',
+    'seller_sub.visibility_subtitle':
+        'Feature your products and shop for a selected duration.',
+    'seller_sub.subscribe': 'Subscribe to the plan',
+    'seller_sub.boost': 'Boost my visibility',
+    'seller_sub.plan.starter': 'Starter',
+    'seller_sub.plan.pro': 'Pro',
+    'seller_sub.plan.business': 'Business',
+    'seller_sub.period.monthly': 'Monthly',
+    'seller_sub.period.quarterly': 'Quarterly',
+    'seller_sub.period.annual': 'Annual',
+    'seller_sub.period.3days': '3 days',
+    'seller_sub.period.weekly': 'Weekly',
+
     // pricing (launch strategy)
-    'fees.vendor_banner': 'BantuLink commission: an all-inclusive 5.5% on each completed sale (payment processing included). No multiple deductions.',
+    'fees.vendor_banner':
+        'BantuLink commission: an all-inclusive 5.5% on each completed sale (payment processing included). No multiple deductions.',
     'fees.vendor_pricing_title': 'Pricing & fees',
     'fees.vendor_pricing_headline': 'Simplified All-in-One Marketplace Fee',
-    'fees.vendor_pricing_body': 'BantuLink charges a flat 5.5% fee on completed sales. This covers payment processing and the use of our secure marketplace.',
+    'fees.vendor_pricing_body':
+        'BantuLink charges a flat 5.5% fee on completed sales. This covers payment processing and the use of our secure marketplace.',
     'fees.no_hidden': 'No hidden fees, no multiple deductions.',
     'fees.wallet_title': 'BantuLink Wallet benefits',
     'fees.wallet_b1': 'Pay your platform subscriptions',
@@ -1281,9 +1401,11 @@ const Map<String, Map<String, String>> kStrings = {
     // freelance subscription (2 options)
     'fsub.mode_title': 'Choose your plan',
     'fsub.mode_commission': 'Per-project commission',
-    'fsub.mode_commission_desc': 'No commitment. A tiered commission applies only to missions paid through the platform.',
+    'fsub.mode_commission_desc':
+        'No commitment. A tiered commission applies only to missions paid through the platform.',
     'fsub.mode_subscription': 'Subscription',
-    'fsub.mode_subscription_desc': 'Pay a fixed fee and enjoy the same services, unlimited.',
+    'fsub.mode_subscription_desc':
+        'Pay a fixed fee and enjoy the same services, unlimited.',
     'fsub.same_services': 'All plans include the same services',
     'fsub.svc_visibility': 'Search visibility',
     'fsub.svc_unlimited': 'Unlimited replies to requests',
@@ -1320,7 +1442,8 @@ const Map<String, Map<String, String>> kStrings = {
     'rsub.title': 'Recruiter Subscription',
     'rsub.subtitle': 'Recruit the best profiles.',
     'rsub.free_plan': 'Free Plan',
-    'rsub.free_desc': '2 months free trial, then subscribe to the Pro Recruiter plan.',
+    'rsub.free_desc':
+        '2 months free trial, then subscribe to the Pro Recruiter plan.',
     'rsub.pro_plan': 'Pro Recruiter Plan',
     'rsub.pro_tagline': 'Unlimited offers, advanced search, filtering',
     'rsub.pro_b1': 'Publish multiple job offers',
@@ -1329,17 +1452,20 @@ const Map<String, Map<String, String>> kStrings = {
     'rsub.pro_b4': 'View candidate profiles',
     'rsub.pro_b5': 'Verified badge',
     'rsub.enterprise_plan': 'Enterprise / Institution Plan',
-    'rsub.enterprise_desc': 'On quote — large companies, NGOs, administrations.',
+    'rsub.enterprise_desc':
+        'On quote — large companies, NGOs, administrations.',
     'rsub.contact_us': 'Contact us',
     'rsub.trial_left': 'Free trial: {days} days left',
-    'rsub.trial_over': 'Your trial period is over. Upgrade to the Pro plan to keep recruiting.',
+    'rsub.trial_over':
+        'Your trial period is over. Upgrade to the Pro plan to keep recruiting.',
     'rsub.per_year': '/ year',
 
     // subscription status + module locking
     'sub.active_until': 'Subscription active until',
     'sub.current_plan': 'Your current plan',
     'gate.locked_title': 'Restricted feature',
-    'gate.candidate_locked': 'Reserved for the Standard plan. Subscribe to unlock job matching and recruiter contact.',
+    'gate.candidate_locked':
+        'Reserved for the Standard plan. Subscribe to unlock job matching and recruiter contact.',
     'gate.recruiter_locked': 'Reserved for the Pro Recruiter plan.',
     'gate.subscribe_now': 'Subscribe now',
 
@@ -1350,7 +1476,8 @@ const Map<String, Map<String, String>> kStrings = {
     'cmatch.tile_sub': 'Job offers that match your profile',
 
     // freelance: subscription rule
-    'fsub.first_free': 'First mission free. From the second one, choose your plan: commission per project or monthly subscription.',
+    'fsub.first_free':
+        'First mission free. From the second one, choose your plan: commission per project or monthly subscription.',
     'fsub.active_badge': 'Active subscription',
 
     // recruiter matching
@@ -1375,12 +1502,14 @@ const Map<String, Map<String, String>> kStrings = {
     'invoice.subtotal': 'Subtotal',
     'invoice.delivery': 'Delivery',
     'invoice.grand_total': 'Grand total',
-    'invoice.fees_note': 'All-inclusive price — the 5.5% platform fee is included and borne by the seller.',
+    'invoice.fees_note':
+        'All-inclusive price — the 5.5% platform fee is included and borne by the seller.',
     'invoice.generated_by': 'Powered by TNK Synergies LTD.',
     'invoice.client': 'Customer',
     'invoice.mission': 'Service',
     'invoice.subscription': 'Subscription',
-    'invoice.freelance_note': 'BantuLink fee based on the project value tier (10 / 8.5 / 6.75 / 5.5%). The net amount is what the provider receives.',
+    'invoice.freelance_note':
+        'BantuLink fee based on the project value tier (10 / 8.5 / 6.75 / 5.5%). The net amount is what the provider receives.',
 
     // offer form (create / edit)
     'offer.step_offer': 'Offer',
@@ -1576,10 +1705,12 @@ const Map<String, Map<String, String>> kStrings = {
 
     // QR Code pickup
     'pickup.qrTitle': 'Pickup code',
-    'pickup.showToSeller': 'Show this QR code to the seller to pick up your order.',
+    'pickup.showToSeller':
+        'Show this QR code to the seller to pick up your order.',
     'pickup.validFor48h': 'Valid for 48 hours',
     'pickup.scanTitle': 'Scan a pickup',
-    'pickup.scanInstructions': 'Scan the customer QR code to validate the pickup.',
+    'pickup.scanInstructions':
+        'Scan the customer QR code to validate the pickup.',
     'pickup.validated': 'Pickup validated!',
   },
 };

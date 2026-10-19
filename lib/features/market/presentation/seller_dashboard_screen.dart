@@ -26,6 +26,11 @@ class SellerDashboardScreen extends ConsumerWidget {
           title: Text(context.tr('market.seller_dashboard')),
           actions: [
             IconButton(
+              tooltip: context.tr('seller_sub.title'),
+              icon: const Icon(Icons.credit_card_outlined),
+              onPressed: () => context.push('/vendeur/abonnement'),
+            ),
+            IconButton(
               tooltip: context.tr('fees.vendor_pricing_title'),
               icon: const Icon(Icons.percent),
               onPressed: () => context.push('/vendeur/tarifs'),
@@ -69,7 +74,8 @@ class _StatsHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(myVendorProductsProvider).valueOrNull ?? const [];
+    final products =
+        ref.watch(myVendorProductsProvider).valueOrNull ?? const [];
     final orders = ref.watch(vendorOrdersProvider).valueOrNull ?? const [];
     final totalSales = orders.fold<num>(0, (acc, o) => acc + (o.total ?? 0));
     final totalStock =
@@ -110,9 +116,11 @@ class _StatsHeader extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
         children: [
-          card(context.tr('market.stats_sales'),
+          card(
+              context.tr('market.stats_sales'),
               '${totalSales.toStringAsFixed(0)} XAF',
-              Icons.payments_outlined, MarketColors.primary),
+              Icons.payments_outlined,
+              MarketColors.primary),
           const SizedBox(width: 8),
           card(context.tr('market.stats_stock'), '$totalStock',
               Icons.inventory_2_outlined, MarketColors.accent),
@@ -156,8 +164,7 @@ class _ProductsTab extends ConsumerWidget {
                   Text('$e', textAlign: TextAlign.center),
                   const SizedBox(height: 12),
                   OutlinedButton(
-                    onPressed: () =>
-                        ref.invalidate(myVendorProductsProvider),
+                    onPressed: () => ref.invalidate(myVendorProductsProvider),
                     child: Text(context.tr('common.retry')),
                   ),
                 ],
@@ -180,8 +187,7 @@ class _ProductsTab extends ConsumerWidget {
                         const SizedBox(height: 12),
                         Text(context.tr('market.no_seller_products'),
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                color: AppColors.textMuted)),
+                            style: const TextStyle(color: AppColors.textMuted)),
                       ],
                     ),
                   )
@@ -391,9 +397,8 @@ class _OrdersTab extends ConsumerWidget {
               ],
             );
           }
-          final sorted = [...orders]
-            ..sort((a, b) =>
-                (b.dateCommande ?? '').compareTo(a.dateCommande ?? ''));
+          final sorted = [...orders]..sort(
+              (a, b) => (b.dateCommande ?? '').compareTo(a.dateCommande ?? ''));
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: sorted.length,
@@ -423,8 +428,8 @@ class _SellerOrderCard extends ConsumerWidget {
       shopLogo = mediaUrl(vendeurRaw['logo']?.toString());
     }
     try {
-      final brand = await InvoiceBrand.vendor(
-          shopLogoUrl: shopLogo, shopName: shopName);
+      final brand =
+          await InvoiceBrand.vendor(shopLogoUrl: shopLogo, shopName: shopName);
       await InvoicePdf.printOrder(
         order,
         (k) => labels[k] ?? k,
@@ -478,8 +483,7 @@ class _SellerOrderCard extends ConsumerWidget {
           ),
           const SizedBox(height: 6),
           Text(order.dateCourt,
-              style:
-                  const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
           const SizedBox(height: 8),
           for (final item in order.produits)
             Padding(
@@ -519,8 +523,7 @@ class _SellerOrderCard extends ConsumerWidget {
           const Divider(height: 16, color: MarketColors.border),
           Row(
             children: [
-              if (order.villeLivraison != null ||
-                  order.telLivraison != null)
+              if (order.villeLivraison != null || order.telLivraison != null)
                 Expanded(
                   child: Text(
                     [order.villeLivraison, order.telLivraison]
@@ -614,8 +617,8 @@ class _WalletTab extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(context.tr('wallet.balance'),
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: 13)),
+                      style:
+                          const TextStyle(color: Colors.white70, fontSize: 13)),
                   const SizedBox(height: 8),
                   Text('${wallet.balance.toStringAsFixed(0)} XAF',
                       style: const TextStyle(
@@ -703,8 +706,8 @@ class _VendorWithdrawSheetState extends ConsumerState<_VendorWithdrawSheet> {
       ref.invalidate(vendorWalletProvider);
       if (!mounted) return;
       Navigator.pop(context);
-      messenger.showSnackBar(SnackBar(
-          content: Text(context.tr('wallet.withdraw_requested'))));
+      messenger.showSnackBar(
+          SnackBar(content: Text(context.tr('wallet.withdraw_requested'))));
     } catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = '$e');
@@ -729,8 +732,8 @@ class _VendorWithdrawSheetState extends ConsumerState<_VendorWithdrawSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(context.tr('wallet.withdraw'),
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
             Row(children: [
               Expanded(child: _payBtn('Orange Money', Colors.orange, 'OM')),
@@ -853,8 +856,15 @@ class _ShopProfileTabState extends ConsumerState<_ShopProfileTab> {
   @override
   void dispose() {
     for (final c in [
-      _nomCtrl, _descCtrl, _sloganCtrl, _adresseCtrl, _villeCtrl,
-      _paysCtrl, _telCtrl, _emailCtrl, _contribuableCtrl,
+      _nomCtrl,
+      _descCtrl,
+      _sloganCtrl,
+      _adresseCtrl,
+      _villeCtrl,
+      _paysCtrl,
+      _telCtrl,
+      _emailCtrl,
+      _contribuableCtrl,
     ]) {
       c.dispose();
     }
@@ -897,8 +907,8 @@ class _ShopProfileTabState extends ConsumerState<_ShopProfileTab> {
       final err = ref.read(updateVendorProfileControllerProvider).error;
       if (err != null) throw err;
       messenger.showSnackBar(SnackBar(
-          content: Text(
-              context.mounted ? context.tr('market.profile_updated') : ''),
+          content:
+              Text(context.mounted ? context.tr('market.profile_updated') : ''),
           backgroundColor: MarketColors.primary));
     } catch (e) {
       messenger.showSnackBar(

@@ -16,7 +16,23 @@
       "Bash(python \"C:/Users/hp/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/54defdac-cbd2-4ad8-b67b-6ee5025e44e0/b3559fb5-cc3a-4c9e-b632-2545ee3093b4/skills/docx/scripts/office/unpack.py\" \"C:/Users/hp/Downloads/PLAN TARIFAIRE BANTUHIRE UPDATE \\(3\\).docx\" plan_tarifaire_unpacked/)",
       "Bash(pip install *)",
       "Bash(git add *)",
-      "Bash(git commit -q -m 'References de commande horodatees + facture TNK Synergies avec infos client *)"
+      "Bash(git commit -q -m 'References de commande horodatees + facture TNK Synergies avec infos client *)",
+      "Bash(xargs grep -nE \"tel_livraison|table\\\\\\(\")",
+      "Bash(cd \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/bantu-market-connect\" && echo \"=== BuyerDashboard: statut mapping ===\"; grep -nE \"'paye'|paye|processing|En traitement|getStatusInfo\" src/pages/BuyerDashboard.tsx | head -15; echo \"=== facture / invoice / Download ===\"; grep -rnE \"Download|invoice|facture|pdf|jsPDF|html2pdf\" src/pages/BuyerDashboard.tsx src/pages/OrderDetails.tsx 2>/dev/null | head -15)",
+      "Bash(cd \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/Bantu_front_app\" && echo \"=== chat online indicator ===\"; grep -nE \"online|isOnline|bg-green|is_online|status|w-3 h-3.*green\" src/pages/app/MessagesSection.jsx | head -15)",
+      "Bash(grep -nE \"phoneRegex|/\\\\^6\\\\\\\\\\\\\\\\d|phone.*regex|Invalide\" src/pages/Checkout.tsx src/pages/Cart.tsx)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('src/locales/fr.json',encoding='utf-8'\\)\\); s=d.get\\('buyerDashboard',{}\\).get\\('status',{}\\); print\\(list\\(s.keys\\(\\)\\)\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(find app *)",
+      "Bash(grep -rn \"class Conversation\" app/Models/)",
+      "Bash(command -v tsc)",
+      "Bash(cd \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/bantuhire-admin-hub\" 2>/dev/null && echo \"=== structure top-level ===\" && ls -la 2>/dev/null | head -20 && echo \"=== pages ===\"; ls src/pages/ 2>/dev/null | head -30; echo \"=== admin routes actuelles ===\"; grep -rnE \"Route|admin|wallet|transaction|revenue\" src/App.tsx 2>/dev/null | head -20)",
+      "Bash(npx --no-install tsc --noEmit -p tsconfig.json)",
+      "Bash(grep -n \"^          const SizedBox\\(height: 24\\)\\\\|^        ],\\\\|^      \\),\\\\|^    \\);\\\\|^  }$\" \"C:/Users/hp/Documents/SBL PROD/TNK Synergies/projet/bantulink_app/lib/features/recruiter/presentation/recruiter_subscription_screen.dart\")",
+      "PowerShell(Set-Location \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\"; $scratch = \"C:\\\\Users\\\\hp\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-hp-Documents-SBL-PROD-TNK-Synergies-projet-bantulink-app\\\\bb8ce558-8226-4617-b86c-45753640ee0e\\\\scratchpad\"; New-Item -ItemType Directory -Force -Path $scratch | Out-Null; Copy-Item routes/api.php \"$scratch\\\\api.php.user\"; git checkout -- routes/api.php; Write-Host \"backup done + api.php reset\"; Write-Host \"\"; Write-Host \"=== apply my recruteur grid patch ===\"; \\(Get-Content routes/api.php -Raw\\) -replace \"'pro' => \\\\['yearly' => 50000\\\\]\", \"'pro' => ['monthly' => 5000, 'quarterly' => 13500, 'yearly' => 50000]\" | Set-Content routes/api.php -NoNewline; git diff --stat routes/api.php)",
+      "Bash(git commit -q -m 'Recruteur: abonnement 3 formules \\(mensuel, trimestriel, annuel\\) + fleche retour *)",
+      "PowerShell(Write-Host \"=== bantulink_app ===\"; Set-Location \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\bantulink_app\"; git status --short; Write-Host \"\"; Write-Host \"=== Bantu_Back ===\"; Set-Location \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\Bantu_Back\"; git status --short; Write-Host \"\"; Write-Host \"=== other repos ===\"; foreach \\($r in @\\(\"bantu-market-connect\",\"Bantu_front_app\",\"bantuhire-admin-hub\"\\)\\) { $p = \"C:\\\\Users\\\\hp\\\\Documents\\\\SBL PROD\\\\TNK Synergies\\\\projet\\\\$r\"; if \\(Test-Path $p\\) { Set-Location $p; $count = \\(git status --short | Measure-Object\\).Count; Write-Host \"$r : $count fichiers modifies\" } })",
+      "Bash(git commit -q -m 'Mobile : 7 nouveaux modules feature \\(community, loyalty, boost, promotions, pickup, chatbot, directory\\) *)"
     ]
   }
 }

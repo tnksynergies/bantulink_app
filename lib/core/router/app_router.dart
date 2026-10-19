@@ -55,6 +55,7 @@ import '../../features/market/presentation/seller_dashboard_screen.dart';
 import '../../features/market/presentation/product_form_screen.dart';
 import '../../features/market/presentation/widgets/vendor_guard.dart';
 import '../../features/market/presentation/vendor_pricing_screen.dart';
+import '../../features/market/presentation/seller_subscription_screen.dart';
 import '../../features/market/application/vendor_providers.dart';
 import '../../features/market/data/models/product.dart';
 import '../../features/community/presentation/community_screen.dart';
@@ -134,7 +135,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
-      GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
+      GoRoute(
+          path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
       GoRoute(
@@ -195,8 +197,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final offre = state.uri.queryParameters['offre'];
           final id = offre != null ? int.tryParse(offre) : null;
-          return RecruiterGuard(
-              child: ApplicationsScreen(filterOfferId: id));
+          return RecruiterGuard(child: ApplicationsScreen(filterOfferId: id));
         },
       ),
       GoRoute(
@@ -223,8 +224,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/recruteur/parametres',
         parentNavigatorKey: _rootKey,
-        builder: (_, __) => const RecruiterGuard(
-            child: ComingSoonScreen(label: 'Parametres')),
+        builder: (_, __) =>
+            const RecruiterGuard(child: ComingSoonScreen(label: 'Parametres')),
       ),
       GoRoute(
         path: '/recruteur/offres/:id/matching',
@@ -336,8 +337,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/prestataire/:id',
         parentNavigatorKey: _rootKey,
-        builder: (_, state) =>
-            FreelancerProfileScreen(freelancerId: int.parse(state.pathParameters['id']!)),
+        builder: (_, state) => FreelancerProfileScreen(
+            freelancerId: int.parse(state.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/devenir-prestataire',
@@ -352,8 +353,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/mission/:id',
         parentNavigatorKey: _rootKey,
-        builder: (_, state) =>
-            MissionDetailScreen(missionId: int.parse(state.pathParameters['id']!)),
+        builder: (_, state) => MissionDetailScreen(
+            missionId: int.parse(state.pathParameters['id']!)),
       ),
 
       // BantuMarket — acheteur
@@ -401,6 +402,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const VendorPricingScreen(),
       ),
       GoRoute(
+        path: '/vendeur/abonnement',
+        parentNavigatorKey: _rootKey,
+        builder: (_, __) =>
+            const VendorGuard(child: SellerSubscriptionScreen()),
+      ),
+      GoRoute(
         path: '/vendeur/produit/nouveau',
         parentNavigatorKey: _rootKey,
         builder: (_, __) => const VendorGuard(child: ProductFormScreen()),
@@ -416,8 +423,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               return async.when(
                 loading: () => const Scaffold(
                     body: Center(child: CircularProgressIndicator())),
-                error: (e, _) =>
-                    Scaffold(body: Center(child: Text('$e'))),
+                error: (e, _) => Scaffold(body: Center(child: Text('$e'))),
                 data: (products) {
                   final Product? found = products
                       .cast<Product?>()
@@ -448,8 +454,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/communaute/post/:id',
         parentNavigatorKey: _rootKey,
-        builder: (_, state) => PostDetailScreen(
-            postId: int.parse(state.pathParameters['id']!)),
+        builder: (_, state) =>
+            PostDetailScreen(postId: int.parse(state.pathParameters['id']!)),
       ),
 
       // Chatbot / FAQ / Tickets support
@@ -538,10 +544,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             GoRoute(path: '/emploi', builder: (_, __) => const JobsScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: '/boutique', builder: (_, __) => const BoutiqueScreen()),
+            GoRoute(
+                path: '/boutique', builder: (_, __) => const BoutiqueScreen()),
           ]),
           StatefulShellBranch(routes: [
-            GoRoute(path: '/messages', builder: (_, __) => const MessagesScreen()),
+            GoRoute(
+                path: '/messages', builder: (_, __) => const MessagesScreen()),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(path: '/profil', builder: (_, __) => const ProfileScreen()),

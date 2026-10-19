@@ -19,7 +19,8 @@ class ProviderDashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(myFreelancerProfileProvider);
     return async.when(
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(context.tr('provider.dashboard'))),
         body: Center(child: Text('$e')),
@@ -116,7 +117,8 @@ class _ProfileTab extends StatelessWidget {
                       : null,
                   child: (avatar == null || avatar.isEmpty)
                       ? Text(freelancer.nomSafe.substring(0, 1).toUpperCase(),
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold))
+                          style: const TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold))
                       : null,
                 ),
                 const SizedBox(width: 16),
@@ -129,17 +131,21 @@ class _ProfileTab extends StatelessWidget {
                           Expanded(
                               child: Text(freelancer.nomSafe,
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.bold))),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold))),
                           if (freelancer.isVerified)
-                            const Icon(Icons.verified, color: AppColors.royalBlue, size: 18),
+                            const Icon(Icons.verified,
+                                color: AppColors.royalBlue, size: 18),
                         ],
                       ),
                       if (freelancer.titrePro != null)
                         Text(freelancer.titrePro!,
-                            style: const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                            style: const TextStyle(
+                                color: AppColors.textMuted, fontSize: 13)),
                       if (freelancer.localisation.isNotEmpty)
                         Text(freelancer.localisation,
-                            style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                            style: const TextStyle(
+                                color: AppColors.textMuted, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -170,7 +176,8 @@ class _ProfileTab extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        if (freelancer.description != null && freelancer.description!.isNotEmpty) ...[
+        if (freelancer.description != null &&
+            freelancer.description!.isNotEmpty) ...[
           Text(context.tr('provider.about'),
               style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
@@ -186,7 +193,8 @@ class _ProfileTab extends StatelessWidget {
             runSpacing: 6,
             children: freelancer.competences.map((c) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                     color: AppColors.background,
                     borderRadius: BorderRadius.circular(6)),
@@ -210,7 +218,8 @@ class _ProfileTab extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.color});
+  const _StatCard(
+      {required this.label, required this.value, required this.color});
   final String label;
   final String value;
   final Color color;
@@ -228,9 +237,11 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(value,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+              style: TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold, color: color)),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+          Text(label,
+              style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
         ],
       ),
     );
@@ -311,22 +322,25 @@ class _MissionsTab extends ConsumerWidget {
         icon: const Icon(Icons.play_arrow, size: 16),
         label: Text(context.tr('provider.start')),
         style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.royalBlue, foregroundColor: Colors.white),
+            backgroundColor: AppColors.royalBlue,
+            foregroundColor: Colors.white),
       ));
     }
-    if (m.canFinishFreelancer) {
-      list.add(OutlinedButton.icon(
-        onPressed: () => setStatus(MissionStatus.terminee),
-        icon: const Icon(Icons.done_all, size: 16),
-        label: Text(context.tr('provider.finish_provider')),
+    if (m.status == MissionStatus.enCours) {
+      list.add(TextButton.icon(
+        onPressed: () => setStatus(MissionStatus.enPause),
+        icon: const Icon(Icons.pause, size: 16),
+        label: Text(context.tr('provider.pause')),
       ));
-      if (m.status == MissionStatus.enCours) {
-        list.add(TextButton.icon(
-          onPressed: () => setStatus(MissionStatus.enPause),
-          icon: const Icon(Icons.pause, size: 16),
-          label: Text(context.tr('provider.pause')),
-        ));
-      }
+    } else if (m.status == MissionStatus.enPause) {
+      list.add(ElevatedButton.icon(
+        onPressed: () => setStatus(MissionStatus.enCours),
+        icon: const Icon(Icons.play_arrow, size: 16),
+        label: Text(context.tr('provider.start')),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.royalBlue,
+            foregroundColor: Colors.white),
+      ));
     }
     // Facture de prestation (logo BantuLink) sur les missions terminees.
     if (m.status == MissionStatus.terminee && (m.cout ?? 0) > 0) {
@@ -427,7 +441,8 @@ class _PortfolioTab extends ConsumerWidget {
                             : Container(
                                 color: AppColors.background,
                                 child: const Center(
-                                    child: Icon(Icons.image_outlined, size: 32)),
+                                    child:
+                                        Icon(Icons.image_outlined, size: 32)),
                               ),
                       ),
                       Padding(
@@ -435,7 +450,8 @@ class _PortfolioTab extends ConsumerWidget {
                         child: Text(r.titre ?? '',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontWeight: FontWeight.w600)),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
@@ -499,7 +515,8 @@ class _ReviewsTab extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(n.dateCourt,
-                style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+                style:
+                    const TextStyle(fontSize: 11, color: AppColors.textMuted)),
             if (n.description != null) ...[
               const SizedBox(height: 4),
               Text(n.description!),

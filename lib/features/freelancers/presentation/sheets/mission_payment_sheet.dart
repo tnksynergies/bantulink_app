@@ -10,10 +10,11 @@ class MissionPaymentSheet extends ConsumerStatefulWidget {
   final Mission mission;
 
   @override
-  ConsumerState<MissionPaymentSheet> createState() => _MissionPaymentSheetState();
+  ConsumerState<MissionPaymentSheet> createState() =>
+      _MissionPaymentSheetState();
 }
 
-enum _Step { choice, form, waiting, success, failed }
+enum _Step { choice, form, waiting, pendingConfirmation, success, failed }
 
 class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
   _Step _step = _Step.choice;
@@ -32,7 +33,8 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
     setState(() => _busy = true);
     try {
       await ref
-          .read(updateMissionStatusControllerProvider(widget.mission.id).notifier)
+          .read(
+              updateMissionStatusControllerProvider(widget.mission.id).notifier)
           .submit(MissionStatus.terminee, paymentMode: 'cash');
       if (!mounted) return;
       Navigator.of(context).pop();
@@ -69,13 +71,33 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
     // Ecoute l'etat du controller pour reagir a success/failed.
     ref.listen(payMissionControllerProvider(widget.mission.id), (prev, next) {
       final data = next.valueOrNull;
+      if (next.hasError) {
+        if (_step != _Step.failed && mounted) {
+          setState(() => _step = _Step.failed);
+        }
+        return;
+      }
       if (data == null) return;
       switch (data.stage) {
+        case PayStage.polling:
+          if (mounted && _step == _Step.choice) {
+            setState(() => _step = _Step.waiting);
+          }
+          break;
+        case PayStage.pendingConfirmation:
+          if (_step != _Step.pendingConfirmation && mounted) {
+            setState(() => _step = _Step.pendingConfirmation);
+          }
+          break;
         case PayStage.success:
-          if (_step != _Step.success && mounted) setState(() => _step = _Step.success);
+          if (_step != _Step.success && mounted) {
+            setState(() => _step = _Step.success);
+          }
           break;
         case PayStage.failed:
-          if (_step != _Step.failed && mounted) setState(() => _step = _Step.failed);
+          if (_step != _Step.failed && mounted) {
+            setState(() => _step = _Step.failed);
+          }
           break;
         default:
           break;
@@ -97,6 +119,18 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
   }
 
   Widget _buildStep(BuildContext context) {
+    if (_step == _Step.choice) {
+      final stage = ref
+          .read(payMissionControllerProvider(widget.mission.id))
+          .valueOrNull
+          ?.stage;
+      if (stage == PayStage.polling) return _buildWaiting(context);
+      if (stage == PayStage.pendingConfirmation) {
+        return _buildPendingConfirmation(context);
+      }
+      if (stage == PayStage.success) return _buildSuccess(context);
+      if (stage == PayStage.failed) return _buildFailed(context);
+    }
     switch (_step) {
       case _Step.choice:
         return _buildChoice(context);
@@ -104,6 +138,8 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
         return _buildForm(context);
       case _Step.waiting:
         return _buildWaiting(context);
+      case _Step.pendingConfirmation:
+        return _buildPendingConfirmation(context);
       case _Step.success:
         return _buildSuccess(context);
       case _Step.failed:
@@ -129,7 +165,8 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Text(context.tr('mission.pay.cash')),
           ),
-          style: OutlinedButton.styleFrom(minimumSize: const Size(double.infinity, 60)),
+          style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 60)),
         ),
         const SizedBox(height: 12),
         if (widget.mission.freelancer?.acceptPlatformPayment != false)
@@ -160,7 +197,8 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
         const SizedBox(height: 4),
         Text(
           '${context.tr('mission.pay.amount_due')}: ${widget.mission.cout?.toStringAsFixed(0) ?? '0'} XAF',
-          style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
+          style: const TextStyle(
+              color: AppColors.primary, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 20),
         Row(
@@ -206,12 +244,13 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
                 border: Border.all(color: AppColors.error.withOpacity(0.35))),
             child: Row(
               children: [
-                const Icon(Icons.error_outline, color: AppColors.error, size: 18),
+                const Icon(Icons.error_outline,
+                    color: AppColors.error, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(_errorMessage!,
-                      style:
-                          const TextStyle(color: AppColors.error, fontSize: 13)),
+                      style: const TextStyle(
+                          color: AppColors.error, fontSize: 13)),
                 ),
               ],
             ),
@@ -271,6 +310,28 @@ class _MissionPaymentSheetState extends ConsumerState<MissionPaymentSheet> {
     );
   }
 
+  Widget _buildPendingConfirmation(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 8),
+        const Icon(Icons.hourglass_top, color: AppColors.royalBlue, size: 56),
+        const SizedBox(height: 16),
+        Text(context.tr('mission.pay.pending_confirmation'),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(context.tr('common.close')),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildFailed(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -324,7 +385,9 @@ class _ProviderButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: selected ? color : AppColors.border, width: selected ? 2 : 1),
+          border: Border.all(
+              color: selected ? color : AppColors.border,
+              width: selected ? 2 : 1),
           borderRadius: BorderRadius.circular(10),
           color: selected ? color.withOpacity(0.08) : Colors.transparent,
         ),
